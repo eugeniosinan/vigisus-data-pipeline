@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import csv
 import ftplib
+import json
 import re
 import shutil
 import zipfile
@@ -24,6 +25,7 @@ ESTABELECIMENTO_PATTERN = re.compile(
 )
 DEFAULT_OUTPUT_DIR = Path("data/raw/cnes")
 DEFAULT_PROCESSED_DIR = Path("data/processed/cnes/estabelecimentos")
+DEFAULT_MANIFEST_PATH = Path("data/github/cnes/estabelecimentos/manifest.json")
 DEFAULT_ENCODING = "latin-1"
 CSV_SEPARATOR = ";"
 CSV_QUOTECHAR = '"'
@@ -288,6 +290,20 @@ def find_latest_local_parquet(processed_dir: Path) -> Path | None:
     return max(candidates, key=lambda item: item[0])[1]
 
 
+def read_manifest_competencia(manifest_path: Path) -> str | None:
+    if not manifest_path.exists():
+        return None
+
+    with manifest_path.open("r", encoding="utf-8") as file_handle:
+        manifest = json.load(file_handle)
+
+    competencia = manifest.get("competencia")
+    if not isinstance(competencia, str):
+        return None
+
+    return competencia
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Baixa a base CNES mais recente do FTP publico do DATASUS."
@@ -305,6 +321,12 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         default=DEFAULT_PROCESSED_DIR,
         help=f"Diretorio onde os Parquets serao salvos. Padrao: {DEFAULT_PROCESSED_DIR}",
+    )
+    parser.add_argument(
+        "--manifest-path",
+        type=Path,
+        default=DEFAULT_MANIFEST_PATH,
+        help=f"Manifesto publicado usado no checker. Padrao: {DEFAULT_MANIFEST_PATH}",
     )
     parser.add_argument(
         "--overwrite",
@@ -331,6 +353,19 @@ def main() -> int:
     try:
         remote_file = get_latest_remote_cnes_file()
         remote_competencia = get_file_competencia(remote_file)
+        manifest_competencia = read_manifest_competencia(args.manifest_path)
+
+        if (
+            manifest_competencia
+            and manifest_competencia >= remote_competencia
+            and not args.overwrite
+        ):
+            print(
+                "Manifest ja esta atualizado: "
+                f"{manifest_competencia} >= {remote_competencia}"
+            )
+            return 0
+
         local_parquet = find_latest_local_parquet(args.processed_dir)
 
         if local_parquet and not args.overwrite:

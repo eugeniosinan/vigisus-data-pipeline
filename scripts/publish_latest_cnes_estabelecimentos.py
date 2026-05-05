@@ -102,6 +102,10 @@ def publish_latest(
     return competencia, files_count, manifest_path
 
 
+def has_manifest(publish_dir: Path) -> bool:
+    return (publish_dir / "manifest.json").exists()
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Publica somente a competencia CNES mais recente em uma arvore limpa."
@@ -136,6 +140,16 @@ def main() -> int:
             publish_dir=args.publish_dir,
             limit_ufs=args.limit_ufs,
         )
+    except FileNotFoundError as exc:
+        if has_manifest(args.publish_dir):
+            print(
+                "Nenhum Parquet local novo para publicar. "
+                f"Manifesto existente mantido em: {args.publish_dir / 'manifest.json'}"
+            )
+            return 0
+
+        print(f"Erro ao preparar publicacao: {exc}")
+        return 1
     except Exception as exc:
         print(f"Erro ao preparar publicacao: {exc}")
         return 1
