@@ -36,7 +36,10 @@ def write_uf_files(
     df = pd.read_parquet(source_file, engine="pyarrow")
     written = 0
 
-    for estado, estado_df in sorted(df.groupby("CO_ESTADO_GESTOR", dropna=False)):
+    if "co_estado_gestor" not in df.columns or "co_municipio_gestor" not in df.columns:
+        df = df.rename(columns={column: column.lower() for column in df.columns})
+
+    for estado, estado_df in sorted(df.groupby("co_estado_gestor", dropna=False)):
         estado_dir = "sem_estado" if pd.isna(estado) or estado == "" else str(estado)
         target_file = target / estado_dir / f"tbEstabelecimento{competencia}_UF{estado_dir}.parquet"
         target_file.parent.mkdir(parents=True, exist_ok=True)
@@ -59,8 +62,8 @@ def write_manifest(
     manifest = {
         "dataset": "CNES estabelecimentos",
         "competencia": competencia,
-        "partition_by": "CO_ESTADO_GESTOR",
-        "filter_column": "CO_MUNICIPIO_GESTOR",
+        "partition_by": "co_estado_gestor",
+        "filter_column": "co_municipio_gestor",
         "source": str(source_file),
         "files_count": files_count,
         "test_mode": test_mode,

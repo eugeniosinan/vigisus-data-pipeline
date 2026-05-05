@@ -182,9 +182,10 @@ def normalize_column_name(column_name: str) -> str:
 
 def transform_estabelecimento_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     df = df.rename(columns={column: normalize_column_name(column) for column in df.columns})
+    df = df.rename(columns={column: column.lower() for column in df.columns})
 
     for column in df.columns:
-        if column.startswith("DT_"):
+        if column.startswith("dt_"):
             parsed_dates = pd.to_datetime(
                 df[column].replace("", pd.NA), format="%d/%m/%Y", errors="coerce"
             )
@@ -201,7 +202,7 @@ def write_partitioned_by_gestor(
     partition_count = 0
 
     for (estado, municipio), municipio_df in df.groupby(
-        ["CO_ESTADO_GESTOR", "CO_MUNICIPIO_GESTOR"], dropna=False
+        ["co_estado_gestor", "co_municipio_gestor"], dropna=False
     ):
         estado_dir = "sem_estado" if pd.isna(estado) or estado == "" else str(estado)
         municipio_dir = (
@@ -218,7 +219,7 @@ def write_partitioned_by_gestor(
 def get_estabelecimento_schema(columns: list[str]) -> pa.Schema:
     fields = []
     for column in columns:
-        field_type = pa.date32() if column.startswith("DT_") else pa.string()
+        field_type = pa.date32() if column.startswith("dt_") else pa.string()
         fields.append(pa.field(column, field_type))
     return pa.schema(fields)
 
