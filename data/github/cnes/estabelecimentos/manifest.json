@@ -1,0 +1,8 @@
+{
+  "dataset": "CNES estabelecimentos",
+  "competencia": "202603",
+  "source": "data\\processed\\cnes\\estabelecimentos\\202603",
+  "files_count": 10,
+  "test_mode": true,
+  "generated_at_utc": "2026-05-05T22:31:23.659197+00:00"
+}
