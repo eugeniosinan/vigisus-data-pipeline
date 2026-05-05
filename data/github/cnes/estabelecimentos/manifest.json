@@ -1,8 +1,10 @@
 {
   "dataset": "CNES estabelecimentos",
   "competencia": "202603",
-  "source": "data\\processed\\cnes\\estabelecimentos\\202603",
-  "files_count": 10,
+  "partition_by": "CO_ESTADO_GESTOR",
+  "filter_column": "CO_MUNICIPIO_GESTOR",
+  "source": "data\\processed\\cnes\\estabelecimentos\\tbEstabelecimento202603.parquet",
+  "files_count": 3,
   "test_mode": true,
-  "generated_at_utc": "2026-05-05T22:31:23.659197+00:00"
+  "generated_at_utc": "2026-05-05T22:43:30.356287+00:00"
 }

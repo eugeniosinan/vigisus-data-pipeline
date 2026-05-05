@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prepare the latest CNES estabelecimento partition tree for GitHub."""
+"""Prepare the latest CNES estabelecimento UF files for GitHub."""
 
 from __future__ import annotations
 
@@ -9,6 +9,8 @@ import shutil
 from datetime import datetime, timezone
 from pathlib import Path
 
+import pandas as pd
+
 
 DEFAULT_SOURCE_DIR = Path("data/processed/cnes/estabelecimentos")
 DEFAULT_PUBLISH_DIR = Path("data/github/cnes/estabelecimentos")
@@ -16,9 +18,10 @@ DEFAULT_PUBLISH_DIR = Path("data/github/cnes/estabelecimentos")
 
 def find_latest_competencia(source_dir: Path) -> str:
     candidates = [
-        path.name
-        for path in source_dir.iterdir()
-        if path.is_dir() and path.name.isdigit() and len(path.name) == 6
+        path.stem.removeprefix("tbEstabelecimento")
+        for path in source_dir.glob("tbEstabelecimento*.parquet")
+        if path.stem.removeprefix("tbEstabelecimento").isdigit()
+        and len(path.stem.removeprefix("tbEstabelecimento")) == 6
     ]
 
     if not candidates:
@@ -27,35 +30,38 @@ def find_latest_competencia(source_dir: Path) -> str:
     return max(candidates)
 
 
-def copy_tree_limited(
-    source: Path, target: Path, limit_municipios: int | None = None
+def write_uf_files(
+    source_file: Path, target: Path, competencia: str, limit_ufs: int | None = None
 ) -> int:
-    copied = 0
+    df = pd.read_parquet(source_file, engine="pyarrow")
+    written = 0
 
-    for parquet_file in sorted(source.glob("*/*/*.parquet")):
-        relative_path = parquet_file.relative_to(source)
-        target_file = target / relative_path
+    for estado, estado_df in sorted(df.groupby("CO_ESTADO_GESTOR", dropna=False)):
+        estado_dir = "sem_estado" if pd.isna(estado) or estado == "" else str(estado)
+        target_file = target / estado_dir / f"tbEstabelecimento{competencia}_UF{estado_dir}.parquet"
         target_file.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(parquet_file, target_file)
-        copied += 1
+        estado_df.to_parquet(target_file, index=False, engine="pyarrow")
+        written += 1
 
-        if limit_municipios is not None and copied >= limit_municipios:
+        if limit_ufs is not None and written >= limit_ufs:
             break
 
-    return copied
+    return written
 
 
 def write_manifest(
     publish_dir: Path,
     competencia: str,
     files_count: int,
-    source_dir: Path,
+    source_file: Path,
     test_mode: bool,
 ) -> Path:
     manifest = {
         "dataset": "CNES estabelecimentos",
         "competencia": competencia,
-        "source": str(source_dir),
+        "partition_by": "CO_ESTADO_GESTOR",
+        "filter_column": "CO_MUNICIPIO_GESTOR",
+        "source": str(source_file),
         "files_count": files_count,
         "test_mode": test_mode,
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
@@ -70,24 +76,24 @@ def write_manifest(
 def publish_latest(
     source_dir: Path,
     publish_dir: Path,
-    limit_municipios: int | None = None,
+    limit_ufs: int | None = None,
 ) -> tuple[str, int, Path]:
     competencia = find_latest_competencia(source_dir)
-    source_competencia_dir = source_dir / competencia
+    source_file = source_dir / f"tbEstabelecimento{competencia}.parquet"
 
     if publish_dir.exists():
         shutil.rmtree(publish_dir)
 
     target_competencia_dir = publish_dir / competencia
-    files_count = copy_tree_limited(
-        source_competencia_dir, target_competencia_dir, limit_municipios=limit_municipios
+    files_count = write_uf_files(
+        source_file, target_competencia_dir, competencia=competencia, limit_ufs=limit_ufs
     )
     manifest_path = write_manifest(
         publish_dir=publish_dir,
         competencia=competencia,
         files_count=files_count,
-        source_dir=source_competencia_dir,
-        test_mode=limit_municipios is not None,
+        source_file=source_file,
+        test_mode=limit_ufs is not None,
     )
 
     return competencia, files_count, manifest_path
@@ -110,10 +116,10 @@ def parse_args() -> argparse.Namespace:
         help=f"Diretorio versionavel para GitHub. Padrao: {DEFAULT_PUBLISH_DIR}",
     )
     parser.add_argument(
-        "--limit-municipios",
+        "--limit-ufs",
         type=int,
         default=None,
-        help="Limita a quantidade de arquivos municipais copiados para teste.",
+        help="Limita a quantidade de UFs geradas para teste.",
     )
     return parser.parse_args()
 
@@ -125,14 +131,14 @@ def main() -> int:
         competencia, files_count, manifest_path = publish_latest(
             source_dir=args.source_dir,
             publish_dir=args.publish_dir,
-            limit_municipios=args.limit_municipios,
+            limit_ufs=args.limit_ufs,
         )
     except Exception as exc:
         print(f"Erro ao preparar publicacao: {exc}")
         return 1
 
     print(f"Competencia publicada: {competencia}")
-    print(f"Arquivos parquet copiados: {files_count}")
+    print(f"Arquivos parquet por UF gerados: {files_count}")
     print(f"Manifesto: {manifest_path}")
     return 0
 
