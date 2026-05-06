@@ -1,0 +1,30 @@
+{
+  "reference_id": "populacao",
+  "title": "IBGE/DATASUS POPSVS - Populacao",
+  "version": "2019-2025",
+  "years": [
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025
+  ],
+  "generated_at_utc": "2026-05-06T15:05:52.679814+00:00",
+  "source": "ftp://ftp.datasus.gov.br/dissemin/publicos/IBGE/POPSVS/",
+  "source_files": {
+    "2019": "POPSBR19.zip",
+    "2020": "POPSBR20.zip",
+    "2021": "POPSBR21.zip",
+    "2022": "POPSBR22.zip",
+    "2023": "POPSBR23.zip",
+    "2024": "POPSBR24.zip",
+    "2025": "POPSBR25.zip"
+  },
+  "file": {
+    "path": "referencias/ibge/populacao/current/populacao.parquet",
+    "sha256": "9b5ad9993ffeb908834b1d27d701f7b8031b2b9fd53947325452ca6166bf6e8a",
+    "rows": 6316542
+  }
+}

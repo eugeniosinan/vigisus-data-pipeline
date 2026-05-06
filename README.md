@@ -39,7 +39,7 @@ data/
 | Referencia | Status | Atualizacao |
 | --- | --- | --- |
 | CNES - Estabelecimentos | Implementado | Diaria via GitHub Actions |
-| Populacao | Planejado | Mensal via GitHub Actions |
+| Populacao | Implementado | Mensal via GitHub Actions |
 | UF | Implementado | Estavel, sem cron |
 | Municipios | Implementado | Estavel, sem cron |
 | Calendario epidemiologico | Implementado | Estavel, sem cron |
@@ -128,6 +128,43 @@ Inclui:
 - `files.{uf}.sha256`
 - `files.{uf}.rows`
 
+## Populacao
+
+Script principal:
+
+```text
+gerar_populacao.py
+```
+
+Fonte:
+
+```text
+ftp://ftp.datasus.gov.br/dissemin/publicos/IBGE/POPSVS/
+```
+
+Funcionamento:
+
+1. Consulta o FTP publico POPSVS.
+2. Identifica arquivos `POPSBRYY.zip` a partir de 2019.
+3. Baixa cada ZIP necessario e extrai o unico DBF interno.
+4. Converte os dados para Parquet com colunas em minusculo.
+5. Consolida todos os anos em um arquivo nacional unico.
+6. Gera SHA256, contagem de linhas, anos cobertos e arquivos de origem no manifest.
+
+Publicacao:
+
+```text
+data/publish/referencias/ibge/populacao/current/populacao.parquet
+```
+
+Colunas publicadas:
+
+```text
+co_municipio_ibge, co_municipio, co_uf, ano, sexo, idade, pop
+```
+
+O arquivo unico mantem todos os anos publicados desde 2019. O checker mensal detecta automaticamente quando surgir um novo `POPSBRYY.zip` no FTP e recompõe o Parquet consolidado.
+
 ## Rodar localmente
 
 Instale dependencias:
@@ -140,6 +177,7 @@ Execute:
 
 ```powershell
 python gerar_cnes.py
+python gerar_populacao.py
 python gerar_uf.py
 python gerar_municipios.py
 python gerar_calendario_epidemiologico.py
@@ -175,6 +213,19 @@ O workflow:
 3. Faz `git add data/publish`.
 4. Commita e faz push somente se houver mudanca real.
 5. Envia mensagem ao Discord somente quando houver commit.
+
+Populacao roda mensalmente as 13:00 no horario de Brasilia, no dia 5:
+
+```text
+.github/workflows/update-populacao.yml
+```
+
+O cron do GitHub usa UTC:
+
+```yaml
+schedule:
+  - cron: "0 16 5 * *"
+```
 
 Para habilitar a notificacao no Discord, configure o secret:
 
