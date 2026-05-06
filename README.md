@@ -42,7 +42,7 @@ data/
 | Populacao | Planejado | Mensal via GitHub Actions |
 | UF | Planejado | Estavel, sem cron |
 | Municipios | Planejado | Estavel, sem cron |
-| Calendario epidemiologico | Planejado | Estavel, sem cron |
+| Calendario epidemiologico | Implementado | Estavel, sem cron |
 
 ## CNES - Estabelecimentos
 
@@ -205,4 +205,6 @@ UF e municipios:
 
 Calendario epidemiologico:
 
-- Sera gerado por regra deterministica no script `gerar_calendario_epidemiologico.py`, cobrindo pelo menos ate 2080, preferencialmente 2100.
+- Gerado por regra deterministica no script `gerar_calendario_epidemiologico.py`, cobrindo 1900 a 2100.
+- As semanas epidemiologicas vao de domingo a sabado.
+- A semana epidemiologica 1 e a semana que contem a maioria dos dias em janeiro, equivalente a semana que contem 4 de janeiro.

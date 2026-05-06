@@ -1,0 +1,12 @@
+{
+  "reference_id": "calendario_epidemiologico",
+  "title": "Calendario Epidemiologico",
+  "version": "1900-2100",
+  "generated_at_utc": "2026-05-06T13:25:14.413945+00:00",
+  "rule": "Semanas epidemiologicas de domingo a sabado; a semana 1 e a semana que contem a maioria dos dias em janeiro.",
+  "file": {
+    "path": "referencias/vigilancia/calendario_epidemiologico/current/calendario_epidemiologico.parquet",
+    "sha256": "9f584b1d8896309a0035c9729cc1c31705c7ec59787ccc4c1e20d71e595b7a93",
+    "rows": 73414
+  }
+}
