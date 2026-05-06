@@ -1,0 +1,12 @@
+{
+  "reference_id": "uf",
+  "title": "IBGE - Unidades da Federacao",
+  "version": "ibge-localidades",
+  "generated_at_utc": "2026-05-06T14:24:28.159746+00:00",
+  "source": "https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome",
+  "file": {
+    "path": "referencias/ibge/uf/current/uf.parquet",
+    "sha256": "9e4729817d294cf98032e5109bad349ce0a4e003f9baae7b4128db977c4f5312",
+    "rows": 27
+  }
+}

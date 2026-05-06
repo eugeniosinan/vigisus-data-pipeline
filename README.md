@@ -40,8 +40,8 @@ data/
 | --- | --- | --- |
 | CNES - Estabelecimentos | Implementado | Diaria via GitHub Actions |
 | Populacao | Planejado | Mensal via GitHub Actions |
-| UF | Planejado | Estavel, sem cron |
-| Municipios | Planejado | Estavel, sem cron |
+| UF | Implementado | Estavel, sem cron |
+| Municipios | Implementado | Estavel, sem cron |
 | Calendario epidemiologico | Implementado | Estavel, sem cron |
 
 ## CNES - Estabelecimentos
@@ -140,6 +140,9 @@ Execute:
 
 ```powershell
 python gerar_cnes.py
+python gerar_uf.py
+python gerar_municipios.py
+python gerar_calendario_epidemiologico.py
 ```
 
 Publique alteracoes:
@@ -201,7 +204,12 @@ O RAG 2024 menciona a RIPSA e bases oficiais usadas como referencia. O repositor
 
 UF e municipios:
 
-- Serao gerados a partir de fonte oficial a definir na etapa de implementacao dos scripts `gerar_uf.py` e `gerar_municipios.py`.
+- Gerados pela API oficial de Localidades do IBGE:
+  `https://servicodados.ibge.gov.br/api/v1/localidades/estados`
+  `https://servicodados.ibge.gov.br/api/v1/localidades/municipios`
+- Os scripts publicam arquivos nacionais unicos em:
+  `data/publish/referencias/ibge/uf/current/uf.parquet`
+  `data/publish/referencias/ibge/municipios/current/municipios.parquet`
 
 Calendario epidemiologico:
 

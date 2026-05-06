@@ -1,0 +1,12 @@
+{
+  "reference_id": "municipios",
+  "title": "IBGE - Municipios",
+  "version": "ibge-localidades",
+  "generated_at_utc": "2026-05-06T14:25:01.275632+00:00",
+  "source": "https://servicodados.ibge.gov.br/api/v1/localidades/municipios?orderBy=nome",
+  "file": {
+    "path": "referencias/ibge/municipios/current/municipios.parquet",
+    "sha256": "535d3a399b6fc7204d51c1545000832a493bb9b45fb1bba2cc4e3d20afb8d5c1",
+    "rows": 5571
+  }
+}
