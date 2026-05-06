@@ -109,3 +109,22 @@ jobs:
 ```
 
 Se nao existir competencia nova no FTP, o primeiro script para no checker pelo `manifest.json`, o segundo script mantem a publicacao atual e o passo de commit nao encontra alteracoes.
+
+## Notificacao no Discord
+
+O workflow envia uma mensagem para o Discord somente quando houver commit com dados atualizados. O webhook deve ficar em um GitHub Secret, nunca direto no YAML.
+
+Crie o secret no GitHub:
+
+```text
+Settings > Secrets and variables > Actions > New repository secret
+```
+
+Use:
+
+```text
+Name: DISCORD_WEBHOOK_URL
+Secret: https://discord.com/api/webhooks/...
+```
+
+Como o repositorio e publico, esse valor nao aparece no codigo nem nos logs do workflow.
