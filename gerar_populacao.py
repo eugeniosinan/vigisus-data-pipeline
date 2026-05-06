@@ -24,13 +24,13 @@ FTP_HOST = "ftp.datasus.gov.br"
 FTP_DIR = "/dissemin/publicos/IBGE/POPSVS"
 FILE_PATTERN = re.compile(r"^POPSBR(?P<yy>\d{2})\.zip$", re.IGNORECASE)
 DEFAULT_START_YEAR = 2019
+DEFAULT_RECENT_YEARS = 3
 
 RAW_DIR = Path("data/raw/ibge/populacao")
 PROCESSED_DIR = Path("data/processed/ibge/populacao")
 PUBLISH_ROOT = Path("data/publish")
 REFERENCE_DIR = PUBLISH_ROOT / "referencias/ibge/populacao"
 CURRENT_DIR = REFERENCE_DIR / "current"
-PARQUET_PATH = CURRENT_DIR / "populacao.parquet"
 REFERENCE_MANIFEST = REFERENCE_DIR / "manifest.json"
 GLOBAL_MANIFEST = PUBLISH_ROOT / "manifest.json"
 
@@ -98,6 +98,23 @@ def read_reference_years() -> list[int]:
         return []
 
     return [int(year) for year in years]
+
+
+def read_reference_files() -> dict[str, dict[str, object]]:
+    if not REFERENCE_MANIFEST.exists():
+        return {}
+
+    with REFERENCE_MANIFEST.open("r", encoding="utf-8") as file_handle:
+        manifest = json.load(file_handle)
+
+    files = manifest.get("files")
+    return files if isinstance(files, dict) else {}
+
+
+def published_files_exist(files: dict[str, dict[str, object]]) -> bool:
+    if not files:
+        return False
+    return all((PUBLISH_ROOT / str(metadata.get("path", ""))).exists() for metadata in files.values())
 
 
 def download_file(file_name: str, overwrite: bool = False) -> Path:
@@ -309,59 +326,37 @@ def write_global_manifest() -> None:
     write_json_if_changed(GLOBAL_MANIFEST, manifest)
 
 
-def read_existing_file_metadata() -> tuple[str | None, int | None]:
-    if not REFERENCE_MANIFEST.exists():
-        return None, None
-
-    with REFERENCE_MANIFEST.open("r", encoding="utf-8") as file_handle:
-        manifest = json.load(file_handle)
-
-    file_info = manifest.get("file")
-    if not isinstance(file_info, dict):
-        return None, None
-
-    sha = file_info.get("sha256")
-    rows = file_info.get("rows")
-    return (sha if isinstance(sha, str) else None, rows if isinstance(rows, int) else None)
-
-
-def combine_years(year_files: dict[int, Path]) -> tuple[str, int]:
+def publish_by_uf(year_files: dict[int, Path]) -> tuple[dict[str, dict[str, object]], int]:
+    if CURRENT_DIR.exists():
+        shutil.rmtree(CURRENT_DIR)
     CURRENT_DIR.mkdir(parents=True, exist_ok=True)
-    temp_path = PARQUET_PATH.with_suffix(".parquet.tmp")
-    temp_path.unlink(missing_ok=True)
 
-    writer = pq.ParquetWriter(temp_path, population_schema())
-    total_rows = 0
-    try:
-        for year in sorted(year_files):
-            parquet_file = pq.ParquetFile(year_files[year])
-            for batch in parquet_file.iter_batches():
-                table = pa.Table.from_batches([batch], schema=population_schema())
-                total_rows += table.num_rows
-                writer.write_table(table)
-    finally:
-        writer.close()
+    df = pd.concat(
+        [pd.read_parquet(year_files[year], engine="pyarrow") for year in sorted(year_files)],
+        ignore_index=True,
+    )
+    if df.empty:
+        raise ValueError("Populacao consolidada ficaria vazia.")
 
-    if total_rows == 0:
-        temp_path.unlink(missing_ok=True)
-        raise ValueError("Arquivo consolidado de populacao ficaria vazio.")
+    files: dict[str, dict[str, object]] = {}
+    for uf, uf_df in sorted(df.groupby("co_uf", dropna=False)):
+        uf_code = "sem_uf" if pd.isna(uf) or uf == "" else str(uf)
+        output_path = CURRENT_DIR / f"{uf_code}.parquet"
+        table = pa.Table.from_pandas(uf_df, schema=population_schema(), preserve_index=False)
+        pq.write_table(table, output_path)
+        files[uf_code] = {
+            "path": output_path.relative_to(PUBLISH_ROOT).as_posix(),
+            "sha256": sha256_file(output_path),
+            "rows": int(len(uf_df)),
+        }
 
-    new_sha = sha256_file(temp_path)
-    old_sha, old_rows = read_existing_file_metadata()
-    changed = new_sha != old_sha or total_rows != old_rows or not PARQUET_PATH.exists()
-
-    if changed:
-        temp_path.replace(PARQUET_PATH)
-    else:
-        temp_path.unlink()
-
-    return new_sha, total_rows
+    return files, int(len(df))
 
 
 def write_reference_manifest(
     years: list[int],
     source_files: dict[int, str],
-    sha256: str,
+    files: dict[str, dict[str, object]],
     rows: int,
 ) -> None:
     manifest = {
@@ -369,32 +364,38 @@ def write_reference_manifest(
         "title": "IBGE/DATASUS POPSVS - Populacao",
         "version": f"{min(years)}-{max(years)}",
         "years": years,
+        "partition": "uf",
+        "municipality_filter_column": "co_municipio_ibge",
         "generated_at_utc": utc_now(),
         "source": f"ftp://{FTP_HOST}{FTP_DIR}/",
         "source_files": {str(year): source_files[year] for year in years},
-        "file": {
-            "path": PARQUET_PATH.relative_to(PUBLISH_ROOT).as_posix(),
-            "sha256": sha256,
-            "rows": rows,
-        },
+        "rows": rows,
+        "files": files,
     }
     write_json_if_changed(REFERENCE_MANIFEST, manifest)
     write_global_manifest()
 
 
 def validate() -> None:
-    df = pd.read_parquet(PARQUET_PATH, engine="pyarrow")
-    if list(df.columns) != OUTPUT_COLUMNS:
-        raise ValueError(f"Colunas invalidas: {list(df.columns)}")
-    if df.empty:
-        raise ValueError("Parquet de populacao vazio.")
-    if not all(column == column.lower() for column in df.columns):
-        raise ValueError("Ha colunas fora do padrao minusculo.")
+    files = read_reference_files()
+    if not files:
+        raise ValueError("Manifest de populacao sem arquivos publicados.")
+
+    for metadata in files.values():
+        path = PUBLISH_ROOT / str(metadata["path"])
+        df = pd.read_parquet(path, engine="pyarrow")
+        if list(df.columns) != OUTPUT_COLUMNS:
+            raise ValueError(f"Colunas invalidas em {path}: {list(df.columns)}")
+        if df.empty:
+            raise ValueError(f"Parquet de populacao vazio: {path}")
+        if not all(column == column.lower() for column in df.columns):
+            raise ValueError(f"Ha colunas fora do padrao minusculo em {path}.")
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Gera referencia POPSVS em Parquet.")
     parser.add_argument("--start-year", type=int, default=DEFAULT_START_YEAR)
+    parser.add_argument("--recent-years", type=int, default=DEFAULT_RECENT_YEARS)
     parser.add_argument("--force", action="store_true", help="Reprocessa todos os anos.")
     parser.add_argument("--chunk-size", type=int, default=250_000)
     return parser.parse_args()
@@ -405,12 +406,16 @@ def main() -> int:
 
     try:
         source_files = list_remote_files(args.start_year)
-        years = sorted(source_files)
+        years = sorted(source_files)[-args.recent_years :]
+        if not years:
+            raise ValueError("Nenhum ano selecionado para processamento.")
+        source_files = {year: source_files[year] for year in years}
         published_years = read_reference_years()
+        published_files = read_reference_files()
         if (
             not args.force
             and published_years == years
-            and PARQUET_PATH.exists()
+            and published_files_exist(published_files)
             and REFERENCE_MANIFEST.exists()
         ):
             print(f"Populacao ja atualizada: {min(years)}-{max(years)}")
@@ -427,8 +432,8 @@ def main() -> int:
             )
             for year in years
         }
-        sha256, rows = combine_years(processed_files)
-        write_reference_manifest(years, source_files, sha256, rows)
+        files, rows = publish_by_uf(processed_files)
+        write_reference_manifest(years, source_files, files, rows)
         validate()
     except Exception as exc:
         print(f"Erro ao gerar populacao: {exc}")
@@ -436,6 +441,7 @@ def main() -> int:
 
     print(f"Populacao publicada: {min(years)}-{max(years)}")
     print(f"Linhas: {rows}")
+    print(f"Arquivos por UF: {len(files)}")
     print(f"Manifest: {REFERENCE_MANIFEST}")
     return 0
 

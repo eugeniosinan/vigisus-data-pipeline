@@ -1,30 +1,157 @@
 {
   "reference_id": "populacao",
   "title": "IBGE/DATASUS POPSVS - Populacao",
-  "version": "2019-2025",
+  "version": "2023-2025",
   "years": [
-    2019,
-    2020,
-    2021,
-    2022,
     2023,
     2024,
     2025
   ],
-  "generated_at_utc": "2026-05-06T15:05:52.679814+00:00",
+  "partition": "uf",
+  "municipality_filter_column": "co_municipio_ibge",
+  "generated_at_utc": "2026-05-06T15:46:52.071314+00:00",
   "source": "ftp://ftp.datasus.gov.br/dissemin/publicos/IBGE/POPSVS/",
   "source_files": {
-    "2019": "POPSBR19.zip",
-    "2020": "POPSBR20.zip",
-    "2021": "POPSBR21.zip",
-    "2022": "POPSBR22.zip",
     "2023": "POPSBR23.zip",
     "2024": "POPSBR24.zip",
     "2025": "POPSBR25.zip"
   },
-  "file": {
-    "path": "referencias/ibge/populacao/current/populacao.parquet",
-    "sha256": "9b5ad9993ffeb908834b1d27d701f7b8031b2b9fd53947325452ca6166bf6e8a",
-    "rows": 6316542
+  "rows": 2707182,
+  "files": {
+    "11": {
+      "path": "referencias/ibge/populacao/current/11.parquet",
+      "sha256": "75851d30ac566011650cd9a402c4bb3f1ac129a603f770d1311196aa4412249f",
+      "rows": 25272
+    },
+    "12": {
+      "path": "referencias/ibge/populacao/current/12.parquet",
+      "sha256": "f7d2ee6f9b4e07f83f1f026ac66497f69552b7ce8af46c0e5e51291a4e55ae8e",
+      "rows": 10692
+    },
+    "13": {
+      "path": "referencias/ibge/populacao/current/13.parquet",
+      "sha256": "2deed4d749c8a368a3c554e02e0066165a42e81a5552b88498208ccb1c525a5a",
+      "rows": 30132
+    },
+    "14": {
+      "path": "referencias/ibge/populacao/current/14.parquet",
+      "sha256": "003269e4634520f16000f9adf22b7d8403f37e32733102d74f28107d367757a6",
+      "rows": 7290
+    },
+    "15": {
+      "path": "referencias/ibge/populacao/current/15.parquet",
+      "sha256": "ca919f3302aeece25129bb02aede9801c8ec1ec82759147d7683dd61a277a012",
+      "rows": 69984
+    },
+    "16": {
+      "path": "referencias/ibge/populacao/current/16.parquet",
+      "sha256": "fb8261b2d5ee2c916ffd25f0f7a503a1aa2ff0ef8e06a98c948526e73f350a22",
+      "rows": 7776
+    },
+    "17": {
+      "path": "referencias/ibge/populacao/current/17.parquet",
+      "sha256": "40928fd0570cbdcde0d69872a73b836521a8e4fedd73ffe6b112663ebf05e029",
+      "rows": 67554
+    },
+    "21": {
+      "path": "referencias/ibge/populacao/current/21.parquet",
+      "sha256": "9388b7d58780bc2bda23fd93603b63ca7d284afe4ab5e5ac61782339f8f1928e",
+      "rows": 105462
+    },
+    "22": {
+      "path": "referencias/ibge/populacao/current/22.parquet",
+      "sha256": "ed677abce2728e44866ccc3e512c5d9bc9ca1ca20389e4ee0af609baeb9c4787",
+      "rows": 108864
+    },
+    "23": {
+      "path": "referencias/ibge/populacao/current/23.parquet",
+      "sha256": "b16cdc83ed23d5f3aa2738c2cb1248ee4ef8a6689e1d4a5fcfd44fcb3014190b",
+      "rows": 89424
+    },
+    "24": {
+      "path": "referencias/ibge/populacao/current/24.parquet",
+      "sha256": "b3f272eab0e6d7d0d9d4d7e327aac832bacd636eec8463a03b94a51bcb865a7e",
+      "rows": 81162
+    },
+    "25": {
+      "path": "referencias/ibge/populacao/current/25.parquet",
+      "sha256": "5a164e62339204de66ce5548be01b9f1105ac356b0c217da042144c7ff284dea",
+      "rows": 108378
+    },
+    "26": {
+      "path": "referencias/ibge/populacao/current/26.parquet",
+      "sha256": "101c955a2d2ec73ee4a5352b0c7ec6df5407e0cec1246aebca3ef565f3227cf1",
+      "rows": 89910
+    },
+    "27": {
+      "path": "referencias/ibge/populacao/current/27.parquet",
+      "sha256": "e2a3b0beaedb382a676dbb3e07bdf6b26b81e2e6b5b1162343ed1fed8124fa58",
+      "rows": 49572
+    },
+    "28": {
+      "path": "referencias/ibge/populacao/current/28.parquet",
+      "sha256": "38040f63ec3815411bf2a01a2f1a59549f550a9303588cb4013531d7adc9ccd3",
+      "rows": 36450
+    },
+    "29": {
+      "path": "referencias/ibge/populacao/current/29.parquet",
+      "sha256": "cb2bc9f9890ddf247e7cff13986e4e8237086025d209bf2a08f7ba8b1fc7f0a4",
+      "rows": 202662
+    },
+    "31": {
+      "path": "referencias/ibge/populacao/current/31.parquet",
+      "sha256": "09fe4ca04309305b69a8ff6af1d45052315446fd7653443d4a49d33a41d6fa66",
+      "rows": 414558
+    },
+    "32": {
+      "path": "referencias/ibge/populacao/current/32.parquet",
+      "sha256": "dd493743ede6d7063f90a6f4abb0f45fae591d8eb76a6b34fe6f3950a063a245",
+      "rows": 37908
+    },
+    "33": {
+      "path": "referencias/ibge/populacao/current/33.parquet",
+      "sha256": "3421cb4781800b0179feb20be49340d25dcb936c5b48bbd5908df41c5a27f21a",
+      "rows": 44712
+    },
+    "35": {
+      "path": "referencias/ibge/populacao/current/35.parquet",
+      "sha256": "04f10184ab158d4fa11846da42588721d4a4e3e581efa7dba088471643241b45",
+      "rows": 313470
+    },
+    "41": {
+      "path": "referencias/ibge/populacao/current/41.parquet",
+      "sha256": "5222ed71e11083844d018e8dde08be2b9cde987006583266bc77b1c432d5a97e",
+      "rows": 193914
+    },
+    "42": {
+      "path": "referencias/ibge/populacao/current/42.parquet",
+      "sha256": "4621638f11d30a3ac7a2c1e3dc6df4368b911766543175dcb690765d6f098aaa",
+      "rows": 143370
+    },
+    "43": {
+      "path": "referencias/ibge/populacao/current/43.parquet",
+      "sha256": "e3e383201cd208e94f3d4775d66cafcb7429a5edf67fc596ff92b52be4c6bf49",
+      "rows": 241542
+    },
+    "50": {
+      "path": "referencias/ibge/populacao/current/50.parquet",
+      "sha256": "45f0a6bf93c94242e22bbe84657494ed2b584fdc60f524cc4cdbbf2299abbeb5",
+      "rows": 38394
+    },
+    "51": {
+      "path": "referencias/ibge/populacao/current/51.parquet",
+      "sha256": "c9a979bcabc07c3cfe6be0c62c58e5827cbc9415c8ec18aa91782b7d006167a4",
+      "rows": 68688
+    },
+    "52": {
+      "path": "referencias/ibge/populacao/current/52.parquet",
+      "sha256": "7f2c6a1a76f03486050e1bf4e7717d92520e12a9912a4f2e333a1c9488f6e694",
+      "rows": 119556
+    },
+    "53": {
+      "path": "referencias/ibge/populacao/current/53.parquet",
+      "sha256": "1c03c9cff642b8418b04755695119cb632991904b7ec67f967971b75ad152f87",
+      "rows": 486
+    }
   }
 }

@@ -57,11 +57,12 @@ jobs:
           fi
 
           VERSION=$(python -c "import json; print(json.load(open('data/publish/referencias/ibge/populacao/manifest.json', encoding='utf-8'))['version'])")
-          ROWS=$(python -c "import json; print(json.load(open('data/publish/referencias/ibge/populacao/manifest.json', encoding='utf-8'))['file']['rows'])")
+          ROWS=$(python -c "import json; print(json.load(open('data/publish/referencias/ibge/populacao/manifest.json', encoding='utf-8'))['rows'])")
+          FILES_COUNT=$(python -c "import json; print(len(json.load(open('data/publish/referencias/ibge/populacao/manifest.json', encoding='utf-8'))['files']))")
           WORKFLOW_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-          export VERSION ROWS WORKFLOW_URL
+          export VERSION ROWS FILES_COUNT WORKFLOW_URL
 
-          python -c "import json, os; print(json.dumps({'content': f\"📊 **População POPSVS atualizada**\\n🗓️ Período: `{os.environ['VERSION']}`\\n👥 Linhas: `{os.environ['ROWS']}`\\n🔎 Workflow: {os.environ['WORKFLOW_URL']}\"}, ensure_ascii=False))" > discord-payload.json
+          python -c "import json, os; print(json.dumps({'content': f\"📊 **População POPSVS atualizada**\\n🗓️ Período: `{os.environ['VERSION']}`\\n🗂️ Arquivos por UF: `{os.environ['FILES_COUNT']}`\\n👥 Linhas: `{os.environ['ROWS']}`\\n🔎 Workflow: {os.environ['WORKFLOW_URL']}\"}, ensure_ascii=False))" > discord-payload.json
 
           curl -sS \
             -H "Content-Type: application/json" \

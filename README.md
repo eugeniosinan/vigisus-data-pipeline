@@ -148,13 +148,16 @@ Funcionamento:
 2. Identifica arquivos `POPSBRYY.zip` a partir de 2019.
 3. Baixa cada ZIP necessario e extrai o unico DBF interno.
 4. Converte os dados para Parquet com colunas em minusculo.
-5. Consolida todos os anos em um arquivo nacional unico.
-6. Gera SHA256, contagem de linhas, anos cobertos e arquivos de origem no manifest.
+5. Mantem os 3 anos mais recentes disponiveis no FTP.
+6. Publica um Parquet por UF em `current`.
+7. Gera SHA256, contagem de linhas, anos cobertos e arquivos de origem no manifest.
 
 Publicacao:
 
 ```text
-data/publish/referencias/ibge/populacao/current/populacao.parquet
+data/publish/referencias/ibge/populacao/current/11.parquet
+data/publish/referencias/ibge/populacao/current/12.parquet
+data/publish/referencias/ibge/populacao/current/33.parquet
 ```
 
 Colunas publicadas:
@@ -163,7 +166,7 @@ Colunas publicadas:
 co_municipio_ibge, co_municipio, co_uf, ano, sexo, idade, pop
 ```
 
-O arquivo unico mantem todos os anos publicados desde 2019. O checker mensal detecta automaticamente quando surgir um novo `POPSBRYY.zip` no FTP e recompõe o Parquet consolidado.
+Cada arquivo de UF contem os 3 anos mais recentes disponiveis no FTP. O checker mensal detecta automaticamente quando surgir um novo `POPSBRYY.zip` e recompõe os Parquets por UF.
 
 ## Rodar localmente
 
