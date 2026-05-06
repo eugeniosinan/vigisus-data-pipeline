@@ -4,6 +4,3 @@ __pycache__/
 # Local cache and generated intermediate files.
 data/raw/
 data/processed/
-
-# Keep GitHub publication outputs versioned under data/github/.
-!data/github/

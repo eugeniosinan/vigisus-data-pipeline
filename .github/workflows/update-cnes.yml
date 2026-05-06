@@ -30,15 +30,14 @@ jobs:
 
       - name: Process CNES
         run: |
-          python scripts/download_cnes_estabelecimentos.py
-          python scripts/publish_latest_cnes_estabelecimentos.py
+          python gerar_cnes.py
 
       - name: Commit changes
         id: commit
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/github/cnes/estabelecimentos
+          git add data/publish
           if git diff --cached --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
@@ -57,8 +56,8 @@ jobs:
             exit 0
           fi
 
-          COMPETENCIA=$(python -c "import json; print(json.load(open('data/github/cnes/estabelecimentos/manifest.json', encoding='utf-8'))['competencia'])")
-          FILES_COUNT=$(python -c "import json; print(json.load(open('data/github/cnes/estabelecimentos/manifest.json', encoding='utf-8'))['files_count'])")
+          COMPETENCIA=$(python -c "import json; print(json.load(open('data/publish/referencias/cnes/estabelecimentos/manifest.json', encoding='utf-8'))['version'])")
+          FILES_COUNT=$(python -c "import json; print(len(json.load(open('data/publish/referencias/cnes/estabelecimentos/manifest.json', encoding='utf-8'))['files']))")
           WORKFLOW_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
           export COMPETENCIA FILES_COUNT WORKFLOW_URL
 

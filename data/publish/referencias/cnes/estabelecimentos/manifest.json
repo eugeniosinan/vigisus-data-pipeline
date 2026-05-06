@@ -1,0 +1,145 @@
+{
+  "reference_id": "cnes_estabelecimentos",
+  "title": "CNES - Estabelecimentos",
+  "version": "202603",
+  "partition": "uf",
+  "municipality_filter_column": "co_municipio_gestor",
+  "generated_at_utc": "2026-05-06T12:56:17.496389+00:00",
+  "files": {
+    "11": {
+      "path": "referencias/cnes/estabelecimentos/current/11.parquet",
+      "sha256": "85dfed68c533340da7a0d5c8c0adb5bd3cec36d38cdb9396eed27c639cd184b7",
+      "rows": 7010
+    },
+    "12": {
+      "path": "referencias/cnes/estabelecimentos/current/12.parquet",
+      "sha256": "dacfc9f84cb49242f886ba9be22e00cd66a301e8d3f8d160e13bb1018ebda1da",
+      "rows": 2036
+    },
+    "13": {
+      "path": "referencias/cnes/estabelecimentos/current/13.parquet",
+      "sha256": "f05e8310fa32762aeb9e9097dba9457238a21ff1035b7d4c9f7ae13804347847",
+      "rows": 4401
+    },
+    "14": {
+      "path": "referencias/cnes/estabelecimentos/current/14.parquet",
+      "sha256": "fbae5e90fb26f7599cf73ee2e0be6bfbf038d2ccfa7d654fcd4d866f762a2776",
+      "rows": 1676
+    },
+    "15": {
+      "path": "referencias/cnes/estabelecimentos/current/15.parquet",
+      "sha256": "2b1d9f078c4884a4f39f5bc447d34055e471856fc8fe154183e63f00c09bbf4f",
+      "rows": 12042
+    },
+    "16": {
+      "path": "referencias/cnes/estabelecimentos/current/16.parquet",
+      "sha256": "5981bf4153c4e5d42442c66800a24a889889f915435bd8cb5250ee4f431ecbf2",
+      "rows": 1273
+    },
+    "17": {
+      "path": "referencias/cnes/estabelecimentos/current/17.parquet",
+      "sha256": "c84d68bf3bb6eb4114d06c25764dd7b19bdd00144ce0018814b95f2c389f1e5f",
+      "rows": 3471
+    },
+    "21": {
+      "path": "referencias/cnes/estabelecimentos/current/21.parquet",
+      "sha256": "3a9b5fa70a7499e73da6c68e5ffd21f930d4b3e00bcd167ab3eab4e768803575",
+      "rows": 9188
+    },
+    "22": {
+      "path": "referencias/cnes/estabelecimentos/current/22.parquet",
+      "sha256": "524ec45efd90194aacf7c1bba59535319f5486c7429b2ad0b6f04e48519ca0b9",
+      "rows": 6203
+    },
+    "23": {
+      "path": "referencias/cnes/estabelecimentos/current/23.parquet",
+      "sha256": "457685dc13ca44ee6f16d02646addc6e9ba29a1785daddb0db7e78b334a1573a",
+      "rows": 18642
+    },
+    "24": {
+      "path": "referencias/cnes/estabelecimentos/current/24.parquet",
+      "sha256": "59f485f1b152f09a770e18cce85c839b63f0f3a076e3111305a2caa60e7718ef",
+      "rows": 7515
+    },
+    "25": {
+      "path": "referencias/cnes/estabelecimentos/current/25.parquet",
+      "sha256": "c1996195b51b1025c478a7b23dcd68de8d03c4dc286a3ca6c4cc8e9ceb651ca8",
+      "rows": 10407
+    },
+    "26": {
+      "path": "referencias/cnes/estabelecimentos/current/26.parquet",
+      "sha256": "632aad8181f53a4db8bf016597e37cb4af3f3b5a2949f9ddf11f3053bb4c9387",
+      "rows": 17405
+    },
+    "27": {
+      "path": "referencias/cnes/estabelecimentos/current/27.parquet",
+      "sha256": "db458aec9bc9309a3b295d128a77bc16182a0746d0a259ce2a6d954116f8f25e",
+      "rows": 5353
+    },
+    "28": {
+      "path": "referencias/cnes/estabelecimentos/current/28.parquet",
+      "sha256": "1e0a97a846a42d504faae16da214e4f623e11052991e98c82f92dd679bb8f63d",
+      "rows": 5802
+    },
+    "29": {
+      "path": "referencias/cnes/estabelecimentos/current/29.parquet",
+      "sha256": "00f123e19a1d1dec34bdf90a3516eb519934fe42239f79879f69a1a562678f06",
+      "rows": 28891
+    },
+    "31": {
+      "path": "referencias/cnes/estabelecimentos/current/31.parquet",
+      "sha256": "f80650cb472dfc45888e2e1b0f38a39cc23757955f4e95b3f007867d7eb50bf0",
+      "rows": 75391
+    },
+    "32": {
+      "path": "referencias/cnes/estabelecimentos/current/32.parquet",
+      "sha256": "451a24b0c19631e2de8909df684660c499c9406305cfea6bfcb47e96403a0b6a",
+      "rows": 12688
+    },
+    "33": {
+      "path": "referencias/cnes/estabelecimentos/current/33.parquet",
+      "sha256": "3a57ae603bd2a6a8dcc0446d8458687a1e237d7d6dd9297772bd9c27bdebf47f",
+      "rows": 56263
+    },
+    "35": {
+      "path": "referencias/cnes/estabelecimentos/current/35.parquet",
+      "sha256": "d386db6474bc27691782df5bad762f4f35b55e6610244770f88f8f19a76fa6d2",
+      "rows": 148352
+    },
+    "41": {
+      "path": "referencias/cnes/estabelecimentos/current/41.parquet",
+      "sha256": "725d190a880af952e2048204a0fec12716fed498ecb6cae0af341236553be295",
+      "rows": 42207
+    },
+    "42": {
+      "path": "referencias/cnes/estabelecimentos/current/42.parquet",
+      "sha256": "7d85590fae460dfd2a18680b5da782245b4042b5c1409c7b45c92ab40247745b",
+      "rows": 34260
+    },
+    "43": {
+      "path": "referencias/cnes/estabelecimentos/current/43.parquet",
+      "sha256": "d2a4cd65103e3ec2d86c22e6316e24702bbce3958bf7ee8976cfaa9218db6a70",
+      "rows": 47106
+    },
+    "50": {
+      "path": "referencias/cnes/estabelecimentos/current/50.parquet",
+      "sha256": "cf0c2f368ccdb1b8b56b8d4a1d79a036d3a8dcc43170ff4aaa2f06e1871693c7",
+      "rows": 9047
+    },
+    "51": {
+      "path": "referencias/cnes/estabelecimentos/current/51.parquet",
+      "sha256": "5b3358081646f33b327f60e25668733a49e499ebe0395c8e4aa855dd869f43cb",
+      "rows": 13301
+    },
+    "52": {
+      "path": "referencias/cnes/estabelecimentos/current/52.parquet",
+      "sha256": "a2c2406967e486a2ff42b55d09836ba6202acaeec934e77d1bc4365fe0e29474",
+      "rows": 17703
+    },
+    "53": {
+      "path": "referencias/cnes/estabelecimentos/current/53.parquet",
+      "sha256": "b8d595696a174ec3c850e9221e6450285343689c954ccfdbfc5e1de06be6d16e",
+      "rows": 12153
+    }
+  }
+}

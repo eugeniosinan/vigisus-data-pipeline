@@ -1,130 +1,208 @@
-# VIGSUS Data Pipeline
+# vigisus-data-pipeline
 
-Pipeline para publicar dados de estabelecimentos CNES do DATASUS em Parquet.
+Fonte oficial de arquivos de referencia consumidos pelo VigiSUS-BR.
 
-## Como funciona
+O VigiSUS-BR e voltado principalmente para municipios. Este repositorio publica bases de referencia em Parquet com caminhos estaveis, manifests e hashes SHA256. A pasta oficial consumida pelo sistema e `data/publish/`.
 
-O fluxo consulta o FTP publico do DATASUS, identifica a competencia mais recente do arquivo `BASE_DE_DADOS_CNES_YYYYMM.ZIP` e compara com o manifesto publicado em:
-
-```text
-data/github/cnes/estabelecimentos/manifest.json
-```
-
-Se a competencia do manifesto ja for igual ou maior que a competencia disponivel no FTP, o processamento e ignorado. Se houver uma competencia nova, o pipeline:
-
-1. Baixa o ZIP mais recente de `ftp.datasus.gov.br/cnes`.
-2. Extrai somente `tbEstabelecimentoYYYYMM.csv`.
-3. Corrige colunas no padrao `TO_CHAR(COLUNA,'DD/MM/YYYY')`.
-4. Converte todas as colunas para minusculo.
-5. Converte colunas `dt_*` para date.
-6. Salva um Parquet local em `data/processed/cnes/estabelecimentos`.
-7. Publica um Parquet por UF em `data/github/cnes/estabelecimentos/YYYYMM`.
-8. Mantem `co_municipio_gestor` dentro dos arquivos por UF para filtro por municipio.
-9. Remove ZIP e CSV temporarios.
-
-## Estrutura publicada
+## Estrutura
 
 ```text
-data/github/cnes/estabelecimentos/
-  manifest.json
-  202603/
-    11/tbEstabelecimento202603_UF11.parquet
-    12/tbEstabelecimento202603_UF12.parquet
-    ...
-    53/tbEstabelecimento202603_UF53.parquet
+data/
+  raw/
+    cnes/estabelecimentos/
+    ibge/populacao/
+    ibge/uf/
+    ibge/municipios/
+    vigilancia/calendario_epidemiologico/
+
+  processed/
+    cnes/estabelecimentos/
+    ibge/populacao/
+    ibge/uf/
+    ibge/municipios/
+    vigilancia/calendario_epidemiologico/
+
+  publish/
+    manifest.json
+    referencias/
+      cnes/estabelecimentos/current/
+      ibge/populacao/current/
+      ibge/uf/current/
+      ibge/municipios/current/
+      vigilancia/calendario_epidemiologico/current/
 ```
 
-Somente `data/github/` deve ser versionado no Git. As pastas `data/raw/` e `data/processed/` sao cache local e ficam no `.gitignore`.
+`data/raw/` e `data/processed/` sao cache de execucao e nao entram no Git. `data/publish/` e a fonte oficial versionada.
 
-## Requisitos
+## Referencias
+
+| Referencia | Status | Atualizacao |
+| --- | --- | --- |
+| CNES - Estabelecimentos | Implementado | Diaria via GitHub Actions |
+| Populacao | Planejado | Mensal via GitHub Actions |
+| UF | Planejado | Estavel, sem cron |
+| Municipios | Planejado | Estavel, sem cron |
+| Calendario epidemiologico | Planejado | Estavel, sem cron |
+
+## CNES - Estabelecimentos
+
+Script principal:
+
+```text
+gerar_cnes.py
+```
+
+Fonte:
+
+```text
+ftp.datasus.gov.br/cnes
+```
+
+Funcionamento:
+
+1. Consulta o FTP publico do DATASUS.
+2. Identifica o arquivo mais recente `BASE_DE_DADOS_CNES_YYYYMM.ZIP`.
+3. Compara `YYYYMM` com `data/publish/referencias/cnes/estabelecimentos/manifest.json`.
+4. Se a versao publicada ja estiver atualizada, encerra sem baixar o ZIP.
+5. Se houver versao nova, extrai apenas `tbEstabelecimentoYYYYMM.csv`.
+6. Corrige colunas `TO_CHAR(COLUNA,'DD/MM/YYYY')`.
+7. Converte nomes de colunas para minusculo.
+8. Converte colunas `dt_*` para date.
+9. Publica um Parquet por UF em `current`.
+10. Gera SHA256 e contagem de linhas no manifest.
+
+Publicacao:
+
+```text
+data/publish/referencias/cnes/estabelecimentos/current/11.parquet
+data/publish/referencias/cnes/estabelecimentos/current/12.parquet
+data/publish/referencias/cnes/estabelecimentos/current/33.parquet
+```
+
+O VigiSUS-BR baixa o arquivo da UF configurada e filtra o municipio pela coluna:
+
+```text
+co_municipio_gestor
+```
+
+Nao ha historico publicado de CNES. A pasta `current/` sempre representa a versao mais recente.
+
+## Manifests
+
+Manifest global:
+
+```text
+data/publish/manifest.json
+```
+
+Formato:
+
+```json
+{
+  "generated_at_utc": "ISO_DATETIME",
+  "references": {
+    "cnes_estabelecimentos": "referencias/cnes/estabelecimentos/manifest.json",
+    "uf": "referencias/ibge/uf/manifest.json",
+    "municipios": "referencias/ibge/municipios/manifest.json",
+    "populacao": "referencias/ibge/populacao/manifest.json",
+    "calendario_epidemiologico": "referencias/vigilancia/calendario_epidemiologico/manifest.json"
+  }
+}
+```
+
+Manifest CNES:
+
+```text
+data/publish/referencias/cnes/estabelecimentos/manifest.json
+```
+
+Inclui:
+
+- `reference_id`
+- `title`
+- `version`
+- `partition`
+- `municipality_filter_column`
+- `generated_at_utc`
+- `files.{uf}.path`
+- `files.{uf}.sha256`
+- `files.{uf}.rows`
+
+## Rodar localmente
+
+Instale dependencias:
 
 ```powershell
 pip install pandas pyarrow
 ```
 
-## Rodar localmente
+Execute:
 
 ```powershell
-cd C:\Projetos\vigisus-data-pipeline
-
-python scripts\download_cnes_estabelecimentos.py
-python scripts\publish_latest_cnes_estabelecimentos.py
-
-git add data\github scripts README.md .gitignore
-git commit -m "Update CNES estabelecimentos"
-git push origin main
+python gerar_cnes.py
 ```
 
-Para testar publicando poucas UFs:
+Publique alteracoes:
 
 ```powershell
-python scripts\publish_latest_cnes_estabelecimentos.py --limit-ufs 3
+git add data/publish gerar_cnes.py README.md .github/workflows/update-cnes.yml .gitignore
+git commit -m "Update CNES reference"
+git push origin main
 ```
 
 ## GitHub Actions
 
-O repositorio ja inclui o workflow `.github/workflows/update-cnes.yml`:
+CNES roda diariamente as 13:00 no horario de Brasilia:
 
-```yaml
-name: Atualizar CNES Estabelecimentos
-
-on:
-  workflow_dispatch:
-  schedule:
-    - cron: "0 8 * * *"
-
-permissions:
-  contents: write
-
-jobs:
-  update-cnes:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install pandas pyarrow
-
-      - name: Process CNES
-        run: |
-          python scripts/download_cnes_estabelecimentos.py
-          python scripts/publish_latest_cnes_estabelecimentos.py
-
-      - name: Commit changes
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/github/cnes/estabelecimentos
-          git diff --cached --quiet || git commit -m "Update CNES estabelecimentos"
-          git push
+```text
+.github/workflows/update-cnes.yml
 ```
 
-Se nao existir competencia nova no FTP, o primeiro script para no checker pelo `manifest.json`, o segundo script mantem a publicacao atual e o passo de commit nao encontra alteracoes.
+O cron do GitHub usa UTC:
 
-## Notificacao no Discord
+```yaml
+schedule:
+  - cron: "0 16 * * *"
+```
 
-O workflow envia uma mensagem para o Discord somente quando houver commit com dados atualizados. O webhook deve ficar em um GitHub Secret, nunca direto no YAML.
+O workflow:
 
-Crie o secret no GitHub:
+1. Instala Python, pandas e pyarrow.
+2. Executa `python gerar_cnes.py`.
+3. Faz `git add data/publish`.
+4. Commita e faz push somente se houver mudanca real.
+5. Envia mensagem ao Discord somente quando houver commit.
+
+Para habilitar a notificacao no Discord, configure o secret:
 
 ```text
 Settings > Secrets and variables > Actions > New repository secret
-```
-
-Use:
-
-```text
 Name: DISCORD_WEBHOOK_URL
 Secret: https://discord.com/api/webhooks/...
 ```
 
-Como o repositorio e publico, esse valor nao aparece no codigo nem nos logs do workflow.
+## Fontes de dados
+
+CNES:
+
+- FTP DATASUS CNES: `ftp.datasus.gov.br/cnes`
+
+Populacao:
+
+- FTP DATASUS/IBGE POPSVS: `ftp://ftp.datasus.gov.br/dissemin/publicos/IBGE/POPSVS/`
+- O TABNET oficial informa que a fonte POPSVS pode ser baixada nesse FTP e descreve a realizacao por CGI Demografico/RIPSA e CGIAE/SVSA/Ministerio da Saude: https://tabnet.datasus.gov.br/cgi/deftohtm.exe?ibge%2Fcnv%2Fpopsvs2024br.def=
+
+Relatorio Anual de Gestao 2024:
+
+- Pagina oficial do RAG: https://www.gov.br/saude/pt-br/acesso-a-informacao/gestao-do-sus/instrumentos-de-planejamento/rag
+- PDF do Relatorio Anual de Gestao 2024 na BVS MS: https://bvsms.saude.gov.br/bvs/publicacoes/relatorio_anual_gestao_2024.pdf
+
+O RAG 2024 menciona a RIPSA e bases oficiais usadas como referencia. O repositorio indica o link original do PDF em vez de armazenar o arquivo, para evitar duplicacao de documento oficial e manter a referencia na fonte primaria.
+
+UF e municipios:
+
+- Serao gerados a partir de fonte oficial a definir na etapa de implementacao dos scripts `gerar_uf.py` e `gerar_municipios.py`.
+
+Calendario epidemiologico:
+
+- Sera gerado por regra deterministica no script `gerar_calendario_epidemiologico.py`, cobrindo pelo menos ate 2080, preferencialmente 2100.
