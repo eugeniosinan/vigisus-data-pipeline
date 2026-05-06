@@ -48,9 +48,9 @@ jobs:
           fi
 
       - name: Notify Discord
+        if: steps.commit.outputs.changed == 'true'
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          CHANGED: ${{ steps.commit.outputs.changed }}
         run: |
           if [ -z "$DISCORD_WEBHOOK_URL" ]; then
             echo "DISCORD_WEBHOOK_URL secret not configured. Skipping notification."
@@ -60,9 +60,9 @@ jobs:
           COMPETENCIA=$(python -c "import json; print(json.load(open('data/github/cnes/estabelecimentos/manifest.json', encoding='utf-8'))['competencia'])")
           FILES_COUNT=$(python -c "import json; print(json.load(open('data/github/cnes/estabelecimentos/manifest.json', encoding='utf-8'))['files_count'])")
           WORKFLOW_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-          export COMPETENCIA FILES_COUNT WORKFLOW_URL CHANGED
+          export COMPETENCIA FILES_COUNT WORKFLOW_URL
 
-          python -c "import json, os; status = 'com alteracao publicada' if os.environ['CHANGED'] == 'true' else 'teste sem alteracao publicada'; print(json.dumps({'content': f\"CNES estabelecimentos: {status}.\\nCompetencia: {os.environ['COMPETENCIA']}\\nArquivos por UF: {os.environ['FILES_COUNT']}\\nWorkflow: {os.environ['WORKFLOW_URL']}\"}, ensure_ascii=False))" > discord-payload.json
+          python -c "import json, os; print(json.dumps({'content': f\"✅ **CNES estabelecimentos atualizado**\\n📅 Competência: `{os.environ['COMPETENCIA']}`\\n🗂️ Arquivos por UF: `{os.environ['FILES_COUNT']}`\\n🔎 Workflow: {os.environ['WORKFLOW_URL']}\"}, ensure_ascii=False))" > discord-payload.json
 
           curl -sS \
             -H "Content-Type: application/json" \
