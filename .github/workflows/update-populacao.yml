@@ -47,22 +47,52 @@ jobs:
           fi
 
       - name: Notify Discord
-        if: steps.commit.outputs.changed == 'true'
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          CHANGED: ${{ steps.commit.outputs.changed }}
         run: |
           if [ -z "$DISCORD_WEBHOOK_URL" ]; then
             echo "DISCORD_WEBHOOK_URL secret not configured. Skipping notification."
             exit 0
           fi
 
-          VERSION=$(python -c "import json; print(json.load(open('data/publish/referencias/ibge/populacao/manifest.json', encoding='utf-8'))['version'])")
-          ROWS=$(python -c "import json; print(json.load(open('data/publish/referencias/ibge/populacao/manifest.json', encoding='utf-8'))['rows'])")
-          FILES_COUNT=$(python -c "import json; print(len(json.load(open('data/publish/referencias/ibge/populacao/manifest.json', encoding='utf-8'))['files']))")
           WORKFLOW_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-          export VERSION ROWS FILES_COUNT WORKFLOW_URL
+          export WORKFLOW_URL
 
-          python -c "import json, os; print(json.dumps({'content': f\"📊 **População POPSVS atualizada**\\n🗓️ Período: `{os.environ['VERSION']}`\\n🗂️ Arquivos por UF: `{os.environ['FILES_COUNT']}`\\n👥 Linhas: `{os.environ['ROWS']}`\\n🔎 Workflow: {os.environ['WORKFLOW_URL']}\"}, ensure_ascii=False))" > discord-payload.json
+          python <<'PY' > discord-payload.json
+          import json
+          import os
+
+          with open(
+              "data/publish/referencias/ibge/populacao/manifest.json",
+              encoding="utf-8",
+          ) as file_handle:
+              manifest = json.load(file_handle)
+
+          version = manifest["version"]
+          rows = manifest["rows"]
+          files_count = len(manifest["files"])
+          last_year = max(int(year) for year in manifest["source_files"])
+          latest_file = manifest["source_files"][str(last_year)]
+          workflow_url = os.environ["WORKFLOW_URL"]
+
+          if os.environ.get("CHANGED") == "true":
+              content = (
+                  f"[ \U0001f310 VIGISUS - Populacao ]\n"
+                  f"\U0001f4ca **Populacao POPSVS atualizada**\n"
+                  f"\U0001f5d3\ufe0f Periodo: `{version}`\n"
+                  f"\U0001f5c2\ufe0f Arquivos por UF: `{files_count}`\n"
+                  f"\U0001f465 Linhas: `{rows}`\n"
+                  f"\U0001f50e Workflow: {workflow_url}"
+              )
+          else:
+              content = (
+                  "[VIGISUS - Populacao ] - "
+                  f"N\u00e3o h\u00e1 dados novos. O ultimo arquivo \u00e9 o {latest_file}"
+              )
+
+          print(json.dumps({"content": content}, ensure_ascii=False))
+          PY
 
           curl -sS \
             -H "Content-Type: application/json" \

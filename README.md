@@ -398,7 +398,7 @@ Os workflows:
 4. Executam o script correspondente.
 5. Fazem `git add data/publish`.
 6. Commitam e fazem push somente se houver mudanca real.
-7. Enviam mensagem ao Discord somente quando houver commit.
+7. Enviam mensagem ao Discord em toda execucao concluida, com ou sem dados novos.
 
 Para habilitar notificacao no Discord, configure o secret:
 
