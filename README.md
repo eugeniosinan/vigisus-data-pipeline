@@ -545,8 +545,8 @@ schedule:
   - cron: "0 16 5 * *"
 ```
 
-Populacao por raca/cor e matriz racial rodam a cada 6 meses, as 13:00 no
-horario de Brasilia, no dia 15 de janeiro e julho:
+Populacao por raca/cor e matriz racial rodam as 13:00 no horario de Brasilia,
+nos dias 15 de maio, agosto, setembro, outubro, novembro e dezembro:
 
 ```text
 .github/workflows/update-populacao-raca-censo.yml
@@ -556,7 +556,7 @@ Cron em UTC:
 
 ```yaml
 schedule:
-  - cron: "0 16 15 1,7 *"
+  - cron: "0 16 15 5,8,9,10,11,12 *"
 ```
 
 Os workflows:

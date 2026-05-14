@@ -3,7 +3,7 @@ name: Atualizar Populacao Raca Censo
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 16 15 1,7 *"
+    - cron: "0 16 15 5,8,9,10,11,12 *"
 
 permissions:
   contents: write
