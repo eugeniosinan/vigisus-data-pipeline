@@ -1,0 +1,70 @@
+{
+  "reference_id": "cid10",
+  "title": "CID-10",
+  "version": "static",
+  "generated_at_utc": "2026-05-14T20:06:21.626146+00:00",
+  "source": "bigdata-icict/ETL-Dataiku-DSS SIM CID-10 CSV files",
+  "update_policy": "Referencia estatica sem cron; copia mantida no repositorio.",
+  "files": {
+    "capitulos": {
+      "csv_path": "referencias/saude/cid10/source/cid10_tabela_capitulos.csv",
+      "parquet_path": "referencias/saude/cid10/current/capitulos.parquet",
+      "source_url": "https://raw.githubusercontent.com/bigdata-icict/ETL-Dataiku-DSS/master/SIM/cid10_tabela_capitulos.csv",
+      "sha256": "f82984e7772e1bccbca045c2ec01f476e0f1e17199c2815b6cb0d74708b841bd",
+      "csv_sha256": "dec22b0488232238d3b67be18b13fc16838f381a780d5531a5a1c4a12c8973da",
+      "rows": 2560,
+      "columns": [
+        "codigo",
+        "descricao",
+        "descricao_breve"
+      ]
+    },
+    "grupos": {
+      "csv_path": "referencias/saude/cid10/source/cid10_tabela_grupos.csv",
+      "parquet_path": "referencias/saude/cid10/current/grupos.parquet",
+      "source_url": "https://raw.githubusercontent.com/bigdata-icict/ETL-Dataiku-DSS/master/SIM/cid10_tabela_grupos.csv",
+      "sha256": "3e3f2bcf05fa6f1849f927196fe433399f2e8512b30b1837f182a95cc8211806",
+      "csv_sha256": "605065db99c6c3103269c3d61314b11ffb2b4a90499fccfbf218cb99a7cf7396",
+      "rows": 2997,
+      "columns": [
+        "codigo",
+        "descricao",
+        "descricao_breve"
+      ]
+    },
+    "categorias": {
+      "csv_path": "referencias/saude/cid10/source/CID-10-CATEGORIAS.CSV.utf8",
+      "parquet_path": "referencias/saude/cid10/current/categorias.parquet",
+      "source_url": "https://raw.githubusercontent.com/bigdata-icict/ETL-Dataiku-DSS/master/SIM/CID-10-CATEGORIAS.CSV.utf8",
+      "sha256": "be131121e5873dcea12745d538de43aa64a9fe049ce89f0c777d848350075021",
+      "csv_sha256": "e7d71e07912ee878e6d16e36f81f32c4af1953974c21c79aca8635dbdcf18c9b",
+      "rows": 2045,
+      "columns": [
+        "cat",
+        "classif",
+        "descricao",
+        "descrabrev",
+        "refer",
+        "excluidos"
+      ]
+    },
+    "subcategorias": {
+      "csv_path": "referencias/saude/cid10/source/CID-10-SUBCATEGORIAS.CSV.utf8",
+      "parquet_path": "referencias/saude/cid10/current/subcategorias.parquet",
+      "source_url": "https://raw.githubusercontent.com/bigdata-icict/ETL-Dataiku-DSS/master/SIM/CID-10-SUBCATEGORIAS.CSV.utf8",
+      "sha256": "2c1c81082429e3c3b9caa056090ac05bae4c4e88252e8c055aeff57f5f029db6",
+      "csv_sha256": "76f3bbf4b016ccc368721e28a3d24d1fa81cc355f157f0bb1177427edd5f85ce",
+      "rows": 12451,
+      "columns": [
+        "subcat",
+        "classif",
+        "restrsexo",
+        "causaobito",
+        "descricao",
+        "descrabrev",
+        "refer",
+        "excluidos"
+      ]
+    }
+  }
+}

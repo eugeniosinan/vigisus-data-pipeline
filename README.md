@@ -17,6 +17,7 @@ pasta `current/` e substituida pela versao mais recente.
   gerar_populacao.py
   gerar_populacao_raca_censo.py
   gerar_matriz_pesos_raca.py
+  gerar_cid10.py
   gerar_uf.py
   gerar_municipios.py
   gerar_calendario_epidemiologico.py
@@ -37,6 +38,7 @@ pasta `current/` e substituida pela versao mais recente.
       ibge/uf/
       ibge/municipios/
       vigilancia/calendario_epidemiologico/
+      saude/cid10/
 
     processed/
       cnes/estabelecimentos/
@@ -74,6 +76,14 @@ pasta `current/` e substituida pela versao mais recente.
           manifest.json
           current/municipios.parquet
 
+        saude/cid10/
+          manifest.json
+          source/*.csv
+          current/capitulos.parquet
+          current/grupos.parquet
+          current/categorias.parquet
+          current/subcategorias.parquet
+
         vigilancia/calendario_epidemiologico/
           manifest.json
           current/calendario_epidemiologico.parquet
@@ -90,6 +100,7 @@ pasta `current/` e substituida pela versao mais recente.
 | Populacao POPSVS | `gerar_populacao.py` | Parquet por UF | Mensal via GitHub Actions |
 | Populacao por raca/cor Censo 2022 | `gerar_populacao_raca_censo.py` | Parquet por UF | Estavel, sem cron |
 | Matriz de pesos por raca/cor | `gerar_matriz_pesos_raca.py` | Parquet por UF | Verificacao semestral via GitHub Actions |
+| CID-10 | `gerar_cid10.py` | 4 arquivos nacionais | Estavel, sem cron |
 | UF | `gerar_uf.py` | Arquivo nacional unico | Estavel, sem cron |
 | Municipios | `gerar_municipios.py` | Arquivo nacional unico | Estavel, sem cron |
 | Calendario epidemiologico | `gerar_calendario_epidemiologico.py` | Arquivo nacional unico | Estavel, sem cron |
@@ -114,6 +125,7 @@ Formato:
     "populacao": "referencias/ibge/populacao/manifest.json",
     "populacao_raca_censo": "referencias/ibge/populacao_raca_censo/manifest.json",
     "matriz_pesos_raca": "referencias/ibge/matriz_pesos_raca/manifest.json",
+    "cid10": "referencias/saude/cid10/manifest.json",
     "calendario_epidemiologico": "referencias/vigilancia/calendario_epidemiologico/manifest.json"
   }
 }
@@ -480,6 +492,89 @@ em varias bases DATASUS.
 
 Esta referencia e deterministica/estavel e nao roda em cron.
 
+## CID-10
+
+Script:
+
+```text
+gerar_cid10.py
+```
+
+Fonte:
+
+```text
+https://github.com/bigdata-icict/ETL-Dataiku-DSS/tree/master/SIM
+```
+
+Esta referencia e estatica e nao roda em cron. Os CSVs originais foram
+preservados no repositorio em:
+
+```text
+data/publish/referencias/saude/cid10/source/
+```
+
+Os Parquets oficiais ficam em:
+
+```text
+data/publish/referencias/saude/cid10/current/capitulos.parquet
+data/publish/referencias/saude/cid10/current/grupos.parquet
+data/publish/referencias/saude/cid10/current/categorias.parquet
+data/publish/referencias/saude/cid10/current/subcategorias.parquet
+```
+
+Manifest:
+
+```text
+data/publish/referencias/saude/cid10/manifest.json
+```
+
+Tabelas:
+
+- `capitulos`: mapeia cada categoria CID-10 ao capitulo.
+- `grupos`: mapeia cada categoria CID-10 ao grupo.
+- `categorias`: contem as categorias de 3 caracteres.
+- `subcategorias`: contem as subcategorias de 4 caracteres.
+
+Colunas de `capitulos` e `grupos`:
+
+```text
+codigo
+descricao
+descricao_breve
+```
+
+Colunas de `categorias`:
+
+```text
+cat
+classif
+descricao
+descrabrev
+refer
+excluidos
+```
+
+Colunas de `subcategorias`:
+
+```text
+subcat
+classif
+restrsexo
+causaobito
+descricao
+descrabrev
+refer
+excluidos
+```
+
+Uso no VigiSUS-BR:
+
+- para classificar uma causa por categoria, usar os 3 primeiros caracteres do
+  CID-10 e relacionar com `categorias.cat`, `capitulos.codigo` ou
+  `grupos.codigo`;
+- para classificar uma causa por subcategoria, remover o ponto do CID-10 e
+  relacionar com `subcategorias.subcat`.
+
 ## Calendario Epidemiologico
 
 Script:
@@ -592,6 +687,7 @@ python gerar_cnes.py
 python gerar_populacao.py
 python gerar_populacao_raca_censo.py
 python gerar_matriz_pesos_raca.py
+python gerar_cid10.py
 python gerar_uf.py
 python gerar_municipios.py
 python gerar_calendario_epidemiologico.py
@@ -605,6 +701,7 @@ python gerar_municipios.py
 python gerar_calendario_epidemiologico.py
 python gerar_populacao_raca_censo.py
 python gerar_matriz_pesos_raca.py
+python gerar_cid10.py
 ```
 
 Validar JSON dos manifests:
@@ -615,6 +712,7 @@ python -m json.tool data/publish/referencias/cnes/estabelecimentos/manifest.json
 python -m json.tool data/publish/referencias/ibge/populacao/manifest.json > $null
 python -m json.tool data/publish/referencias/ibge/populacao_raca_censo/manifest.json > $null
 python -m json.tool data/publish/referencias/ibge/matriz_pesos_raca/manifest.json > $null
+python -m json.tool data/publish/referencias/saude/cid10/manifest.json > $null
 python -m json.tool data/publish/referencias/ibge/uf/manifest.json > $null
 python -m json.tool data/publish/referencias/ibge/municipios/manifest.json > $null
 python -m json.tool data/publish/referencias/vigilancia/calendario_epidemiologico/manifest.json > $null
@@ -623,7 +721,7 @@ python -m json.tool data/publish/referencias/vigilancia/calendario_epidemiologic
 Validar sintaxe dos scripts:
 
 ```powershell
-python -m py_compile gerar_cnes.py gerar_populacao.py gerar_populacao_raca_censo.py gerar_matriz_pesos_raca.py gerar_uf.py gerar_municipios.py gerar_calendario_epidemiologico.py
+python -m py_compile gerar_cnes.py gerar_populacao.py gerar_populacao_raca_censo.py gerar_matriz_pesos_raca.py gerar_cid10.py gerar_uf.py gerar_municipios.py gerar_calendario_epidemiologico.py
 ```
 
 ## Como o VigiSUS-BR Consome
@@ -642,6 +740,8 @@ Exemplos:
   por `co_municipio_ibge`.
 - Matriz racial: baixar `referencias/ibge/matriz_pesos_raca/current/33.parquet`
   e aplicar `peso_raca` sobre a populacao POPSVS projetada.
+- CID-10: baixar `referencias/saude/cid10/current/categorias.parquet` ou
+  `subcategorias.parquet` para qualificar causas por categoria/subcategoria.
 - UF, municipios e calendario: baixar o arquivo nacional unico.
 
 ## Fontes de Dados
@@ -663,6 +763,11 @@ Populacao por raca/cor e matriz de pesos:
   https://apisidra.ibge.gov.br/
 - Tabela 9606, Censo Demografico 2022, populacao residente por municipio,
   sexo, idade e cor ou raca.
+
+CID-10:
+
+- CSVs mantidos a partir do repositorio:
+  https://github.com/bigdata-icict/ETL-Dataiku-DSS/tree/master/SIM
 
 UF e municipios:
 

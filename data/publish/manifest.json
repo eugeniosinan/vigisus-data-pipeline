@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-05-14T15:53:56.424371+00:00",
+  "generated_at_utc": "2026-05-14T20:06:21.627205+00:00",
   "references": {
     "cnes_estabelecimentos": "referencias/cnes/estabelecimentos/manifest.json",
     "uf": "referencias/ibge/uf/manifest.json",
@@ -7,6 +7,7 @@
     "populacao": "referencias/ibge/populacao/manifest.json",
     "populacao_raca_censo": "referencias/ibge/populacao_raca_censo/manifest.json",
     "matriz_pesos_raca": "referencias/ibge/matriz_pesos_raca/manifest.json",
+    "cid10": "referencias/saude/cid10/manifest.json",
     "calendario_epidemiologico": "referencias/vigilancia/calendario_epidemiologico/manifest.json"
   }
 }
