@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Gera matriz de pesos raciais do Censo 2022 para o VigiSUS-BR."""
+"""Gera matriz de pesos raciais do Censo para o VigiSUS-BR."""
 
 from __future__ import annotations
 
@@ -15,10 +15,10 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 
 
-CENSUS_YEAR = 2022
 PUBLISH_ROOT = Path("data/publish")
 SOURCE_REFERENCE_DIR = PUBLISH_ROOT / "referencias/ibge/populacao_raca_censo"
 SOURCE_CURRENT_DIR = SOURCE_REFERENCE_DIR / "current"
+SOURCE_MANIFEST = SOURCE_REFERENCE_DIR / "manifest.json"
 REFERENCE_DIR = PUBLISH_ROOT / "referencias/ibge/matriz_pesos_raca"
 CURRENT_DIR = REFERENCE_DIR / "current"
 REFERENCE_MANIFEST = REFERENCE_DIR / "manifest.json"
@@ -118,6 +118,38 @@ def source_files() -> dict[str, Path]:
     return dict(sorted(files.items()))
 
 
+def read_json(path: Path) -> dict:
+    if not path.exists():
+        return {}
+    with path.open("r", encoding="utf-8") as file_handle:
+        payload = json.load(file_handle)
+    return payload if isinstance(payload, dict) else {}
+
+
+def source_version() -> str:
+    manifest = read_json(SOURCE_MANIFEST)
+    version = manifest.get("version")
+    if not isinstance(version, str):
+        raise ValueError("Manifest populacao_raca_censo sem version.")
+    return version
+
+
+def published_files_exist(files: dict[str, dict[str, object]]) -> bool:
+    if not files:
+        return False
+    return all((PUBLISH_ROOT / str(metadata.get("path", ""))).exists() for metadata in files.values())
+
+
+def already_updated(version: str) -> bool:
+    manifest = read_json(REFERENCE_MANIFEST)
+    files = manifest.get("files")
+    return (
+        manifest.get("version") == version
+        and isinstance(files, dict)
+        and published_files_exist(files)
+    )
+
+
 def build_matrix(df: pd.DataFrame) -> pd.DataFrame:
     group_columns = ["ano_censo", "co_municipio_ibge", "sexo", "idade"]
     totals = (
@@ -167,18 +199,18 @@ def publish(files_by_uf: dict[str, Path]) -> tuple[dict[str, dict[str, object]],
     return files, total_rows
 
 
-def write_reference_manifest(files: dict[str, dict[str, object]], rows: int) -> None:
+def write_reference_manifest(files: dict[str, dict[str, object]], rows: int, version: str) -> None:
     manifest = {
         "reference_id": "matriz_pesos_raca",
-        "title": "IBGE Censo 2022 - Matriz de Pesos por Raca/Cor",
-        "version": str(CENSUS_YEAR),
+        "title": f"IBGE Censo {version} - Matriz de Pesos por Raca/Cor",
+        "version": version,
         "partition": "uf",
         "municipality_filter_column": "co_municipio_ibge",
         "generated_at_utc": utc_now(),
         "method": "peso_raca = pop_raca / pop_total_grupo",
         "formula": (
             "PopEstimada(ano,mun,sexo,idade,raca) = "
-            "TotalProjetadoDATASUS(ano,mun,sexo,idade) * PesoRacaCenso2022"
+            f"TotalProjetadoDATASUS(ano,mun,sexo,idade) * PesoRacaCenso{version}"
         ),
         "source_reference": "referencias/ibge/populacao_raca_censo/manifest.json",
         "rows": rows,
@@ -209,9 +241,10 @@ def validate(files: dict[str, dict[str, object]]) -> None:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Gera matriz de pesos raciais do Censo 2022 em Parquet."
+        description="Gera matriz de pesos raciais do Censo em Parquet."
     )
     parser.add_argument("--ufs", help="Lista de UFs separadas por virgula. Ex.: 11,33")
+    parser.add_argument("--force", action="store_true", help="Regera mesmo sem versao nova.")
     return parser.parse_args()
 
 
@@ -219,6 +252,13 @@ def main() -> int:
     args = parse_args()
 
     try:
+        version = source_version()
+        if not args.force and already_updated(version):
+            print(f"Matriz de pesos raciais ja atualizada: {version}")
+            if not GLOBAL_MANIFEST.exists():
+                write_global_manifest()
+            return 0
+
         files_by_uf = source_files()
         if args.ufs:
             selected = {uf.strip().zfill(2) for uf in args.ufs.split(",") if uf.strip()}
@@ -226,13 +266,13 @@ def main() -> int:
             if not files_by_uf:
                 raise ValueError("Nenhuma UF selecionada possui arquivo censitario.")
         files, rows = publish(files_by_uf)
-        write_reference_manifest(files, rows)
+        write_reference_manifest(files, rows, version)
         validate(files)
     except Exception as exc:
         print(f"Erro ao gerar matriz de pesos raciais: {exc}")
         return 1
 
-    print(f"Matriz de pesos raciais publicada: {CENSUS_YEAR}")
+    print(f"Matriz de pesos raciais publicada: {version}")
     print(f"Arquivos por UF: {len(files)}")
     print(f"Linhas: {rows}")
     print(f"Manifest: {REFERENCE_MANIFEST}")

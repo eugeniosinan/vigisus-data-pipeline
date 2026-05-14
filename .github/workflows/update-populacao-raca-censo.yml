@@ -1,0 +1,105 @@
+name: Atualizar Populacao Raca Censo
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 16 15 1,7 *"
+
+permissions:
+  contents: write
+
+jobs:
+  update-populacao-raca-censo:
+    runs-on: ubuntu-latest
+    env:
+      TZ: America/Sao_Paulo
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas pyarrow
+
+      - name: Process populacao raca censo
+        run: |
+          python gerar_populacao_raca_censo.py
+          python gerar_matriz_pesos_raca.py
+
+      - name: Commit changes
+        id: commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/publish
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            git commit -m "Update Censo racial weight matrix"
+            git push
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Notify Discord
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          CHANGED: ${{ steps.commit.outputs.changed }}
+        run: |
+          if [ -z "$DISCORD_WEBHOOK_URL" ]; then
+            echo "DISCORD_WEBHOOK_URL secret not configured. Skipping notification."
+            exit 0
+          fi
+
+          WORKFLOW_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          export WORKFLOW_URL
+
+          python <<'PY' > discord-payload.json
+          import json
+          import os
+
+          with open(
+              "data/publish/referencias/ibge/populacao_raca_censo/manifest.json",
+              encoding="utf-8",
+          ) as file_handle:
+              censo = json.load(file_handle)
+
+          with open(
+              "data/publish/referencias/ibge/matriz_pesos_raca/manifest.json",
+              encoding="utf-8",
+          ) as file_handle:
+              matriz = json.load(file_handle)
+
+          version = censo["version"]
+          files_count = len(matriz["files"])
+          rows = matriz["rows"]
+          workflow_url = os.environ["WORKFLOW_URL"]
+
+          if os.environ.get("CHANGED") == "true":
+              content = (
+                  f"[ \U0001f310 VIGISUS - Matriz Racial ]\n"
+                  f"\U0001f9ec **Matriz racial do Censo atualizada**\n"
+                  f"\U0001f5d3\ufe0f Periodo: `{version}`\n"
+                  f"\U0001f5c2\ufe0f Arquivos por UF: `{files_count}`\n"
+                  f"\U0001f465 Linhas: `{rows}`\n"
+                  f"\U0001f50e Workflow: {workflow_url}"
+              )
+          else:
+              content = (
+                  "[VIGISUS - Matriz Racial ] - "
+                  f"N\u00e3o h\u00e1 dados novos. O ultimo periodo \u00e9 o {version}"
+              )
+
+          print(json.dumps({"content": content}, ensure_ascii=False))
+          PY
+
+          curl -sS \
+            -H "Content-Type: application/json" \
+            -d @discord-payload.json \
+            "$DISCORD_WEBHOOK_URL"

@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Gera populacao censitaria 2022 por raca/cor para o VigiSUS-BR."""
+"""Gera populacao censitaria por raca/cor para o VigiSUS-BR."""
 
 from __future__ import annotations
 
 import argparse
+import gzip
 import hashlib
 import json
 import re
@@ -21,8 +22,11 @@ import pyarrow.parquet as pq
 
 SIDRA_TABLE = "9606"
 SIDRA_VARIABLE = "93"
-CENSUS_YEAR = 2022
+DEFAULT_CENSUS_YEAR = 2022
+CENSUS_YEAR = DEFAULT_CENSUS_YEAR
 SOURCE_URL = "https://apisidra.ibge.gov.br/values"
+METADATA_URL = f"https://servicodados.ibge.gov.br/api/v3/agregados/{SIDRA_TABLE}/metadados"
+PERIODS_URL = f"https://servicodados.ibge.gov.br/api/v3/agregados/{SIDRA_TABLE}/periodos"
 DEFAULT_SLEEP_SECONDS = 0.2
 DEFAULT_RETRIES = 3
 DEFAULT_AGE_CHUNK_SIZE = 25
@@ -106,6 +110,75 @@ OUTPUT_COLUMNS = [
 
 def utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+def fetch_json(url: str) -> object:
+    request = Request(
+        url,
+        headers={
+            "Accept": "application/json",
+            "Accept-Encoding": "identity",
+            "User-Agent": "vigisus-data-pipeline",
+        },
+    )
+    with urlopen(request, timeout=120) as response:
+        raw = response.read()
+    if raw[:2] == b"\x1f\x8b":
+        raw = gzip.decompress(raw)
+    return json.loads(raw.decode("utf-8-sig"))
+
+
+def periods_from_payload(payload: object) -> list[int]:
+    periods = []
+    if isinstance(payload, dict):
+        raw_periods = payload.get("periodos")
+        if isinstance(raw_periods, list):
+            for item in raw_periods:
+                if isinstance(item, dict) and str(item.get("id", "")).isdigit():
+                    periods.append(int(item["id"]))
+                elif str(item).isdigit():
+                    periods.append(int(str(item)))
+
+        periodicity = payload.get("periodicidade")
+        if isinstance(periodicity, dict) and str(periodicity.get("fim", "")).isdigit():
+            periods.append(int(periodicity["fim"]))
+
+    elif isinstance(payload, list):
+        for item in payload:
+            if isinstance(item, dict) and str(item.get("id", "")).isdigit():
+                periods.append(int(item["id"]))
+            elif str(item).isdigit():
+                periods.append(int(str(item)))
+
+    return sorted(set(periods))
+
+
+def available_periods() -> list[int]:
+    periods = periods_from_payload(fetch_json(METADATA_URL))
+    if len(periods) <= 1:
+        periods = sorted(set(periods + periods_from_payload(fetch_json(PERIODS_URL))))
+    if not periods:
+        raise ValueError("Nenhum periodo disponivel encontrado na API de metadados.")
+    return periods
+
+
+def latest_available_period() -> int:
+    return max(available_periods())
+
+
+def read_reference_version() -> int | None:
+    if not REFERENCE_MANIFEST.exists():
+        return None
+    with REFERENCE_MANIFEST.open("r", encoding="utf-8") as file_handle:
+        manifest = json.load(file_handle)
+    version = manifest.get("version")
+    return int(version) if str(version).isdigit() else None
+
+
+def published_files_exist(files: dict[str, dict[str, object]]) -> bool:
+    if not files:
+        return False
+    return all((PUBLISH_ROOT / str(metadata.get("path", ""))).exists() for metadata in files.values())
 
 
 def sidra_url(uf: str, race_id: str, sex_id: str, age_ids: list[int]) -> str:
@@ -301,7 +374,7 @@ def publish(processed_files: dict[str, Path]) -> tuple[dict[str, dict[str, objec
 def write_reference_manifest(files: dict[str, dict[str, object]], rows: int) -> None:
     manifest = {
         "reference_id": "populacao_raca_censo",
-        "title": "IBGE Censo 2022 - Populacao por Raca/Cor",
+        "title": f"IBGE Censo {CENSUS_YEAR} - Populacao por Raca/Cor",
         "version": str(CENSUS_YEAR),
         "partition": "uf",
         "municipality_filter_column": "co_municipio_ibge",
@@ -310,6 +383,8 @@ def write_reference_manifest(files: dict[str, dict[str, object]], rows: int) -> 
         "source_table": SIDRA_TABLE,
         "source_variable": SIDRA_VARIABLE,
         "source_url": SOURCE_URL,
+        "metadata_url": METADATA_URL,
+        "periods_url": PERIODS_URL,
         "rows": rows,
         "files": files,
     }
@@ -346,7 +421,12 @@ def parse_ufs(value: str | None) -> list[str]:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Gera populacao censitaria 2022 por raca/cor em Parquet."
+        description="Gera populacao censitaria por raca/cor em Parquet."
+    )
+    parser.add_argument(
+        "--year",
+        type=int,
+        help="Ano SIDRA a extrair. Se omitido, usa o periodo mais recente da API.",
     )
     parser.add_argument("--ufs", help="Lista de UFs separadas por virgula. Ex.: 11,33")
     parser.add_argument("--sleep-seconds", type=float, default=DEFAULT_SLEEP_SECONDS)
@@ -357,10 +437,26 @@ def parse_args() -> argparse.Namespace:
 
 
 def main() -> int:
+    global CENSUS_YEAR
+
     args = parse_args()
     ufs = parse_ufs(args.ufs)
 
     try:
+        CENSUS_YEAR = args.year or latest_available_period()
+        published_version = read_reference_version()
+        published_files = read_reference_files()
+        if (
+            not args.force
+            and published_version is not None
+            and published_version >= CENSUS_YEAR
+            and published_files_exist(published_files)
+        ):
+            print(f"Populacao por raca/cor ja atualizada: {published_version} >= {CENSUS_YEAR}")
+            if not GLOBAL_MANIFEST.exists():
+                write_global_manifest()
+            return 0
+
         processed_files = {
             uf: extract_uf(
                 uf,

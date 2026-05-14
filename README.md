@@ -26,6 +26,7 @@ pasta `current/` e substituida pela versao mais recente.
     workflows/
       update-cnes.yml
       update-populacao.yml
+      update-populacao-raca-censo.yml
 
   data/
     raw/
@@ -88,7 +89,7 @@ pasta `current/` e substituida pela versao mais recente.
 | CNES - Estabelecimentos | `gerar_cnes.py` | Parquet por UF | Diaria via GitHub Actions |
 | Populacao POPSVS | `gerar_populacao.py` | Parquet por UF | Mensal via GitHub Actions |
 | Populacao por raca/cor Censo 2022 | `gerar_populacao_raca_censo.py` | Parquet por UF | Estavel, sem cron |
-| Matriz de pesos por raca/cor | `gerar_matriz_pesos_raca.py` | Parquet por UF | Estavel, sem cron |
+| Matriz de pesos por raca/cor | `gerar_matriz_pesos_raca.py` | Parquet por UF | Verificacao semestral via GitHub Actions |
 | UF | `gerar_uf.py` | Arquivo nacional unico | Estavel, sem cron |
 | Municipios | `gerar_municipios.py` | Arquivo nacional unico | Estavel, sem cron |
 | Calendario epidemiologico | `gerar_calendario_epidemiologico.py` | Arquivo nacional unico | Estavel, sem cron |
@@ -282,12 +283,21 @@ gerar_populacao_raca_censo.py
 
 Funcionamento:
 
-1. Consulta a API SIDRA para cada UF.
-2. Usa municipio, sexo, idade simples e raca/cor.
-3. Quebra as consultas por blocos de idade para respeitar limites da API.
-4. Publica um Parquet por UF.
-5. Mantem `data/raw/ibge/populacao_raca_censo/2022/` e
+1. Consulta a API de metadados da tabela 9606.
+2. Verifica o ultimo periodo disponivel sem baixar a tabela completa.
+3. Se o periodo publicado ja for o mais recente, encerra sem alterar arquivos.
+4. Se houver periodo novo, consulta a API SIDRA para cada UF.
+5. Usa municipio, sexo, idade simples e raca/cor.
+6. Quebra as consultas por blocos de idade para respeitar limites da API.
+7. Publica um Parquet por UF.
+8. Mantem `data/raw/ibge/populacao_raca_censo/{ano}/` e
    `data/processed/ibge/populacao_raca_censo/` como cache local.
+
+Endpoint de verificacao:
+
+```text
+https://servicodados.ibge.gov.br/api/v3/agregados/9606/metadados
+```
 
 Publicacao:
 
@@ -533,6 +543,20 @@ Cron em UTC:
 ```yaml
 schedule:
   - cron: "0 16 5 * *"
+```
+
+Populacao por raca/cor e matriz racial rodam a cada 6 meses, as 13:00 no
+horario de Brasilia, no dia 15 de janeiro e julho:
+
+```text
+.github/workflows/update-populacao-raca-censo.yml
+```
+
+Cron em UTC:
+
+```yaml
+schedule:
+  - cron: "0 16 15 1,7 *"
 ```
 
 Os workflows:
