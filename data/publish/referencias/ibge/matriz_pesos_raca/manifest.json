@@ -1,0 +1,149 @@
+{
+  "reference_id": "matriz_pesos_raca",
+  "title": "IBGE Censo 2022 - Matriz de Pesos por Raca/Cor",
+  "version": "2022",
+  "partition": "uf",
+  "municipality_filter_column": "co_municipio_ibge",
+  "generated_at_utc": "2026-05-14T15:53:56.423373+00:00",
+  "method": "peso_raca = pop_raca / pop_total_grupo",
+  "formula": "PopEstimada(ano,mun,sexo,idade,raca) = TotalProjetadoDATASUS(ano,mun,sexo,idade) * PesoRacaCenso2022",
+  "source_reference": "referencias/ibge/populacao_raca_censo/manifest.json",
+  "rows": 5625700,
+  "files": {
+    "11": {
+      "path": "referencias/ibge/matriz_pesos_raca/current/11.parquet",
+      "sha256": "f1ada9126ff8d9ca8565cc1fa5dc4f01806ea414cb86c695bdc6f55ddf9a1c2b",
+      "rows": 52520
+    },
+    "12": {
+      "path": "referencias/ibge/matriz_pesos_raca/current/12.parquet",
+      "sha256": "af055542876eafe3f668a46a96e3f311fe92807b5a09ededaa6c46bfb5c75e53",
+      "rows": 22220
+    },
+    "13": {
+      "path": "referencias/ibge/matriz_pesos_raca/current/13.parquet",
+      "sha256": "ac43db3f8ab1c305197bfac35be0493d49250011dc6f2d43b38f1d33698ef944",
+      "rows": 62620
+    },
+    "14": {
+      "path": "referencias/ibge/matriz_pesos_raca/current/14.parquet",
+      "sha256": "f2549b4b099e6cc410d1f68543e1acbdff2223cd2ada60846093a6c8316d90ec",
+      "rows": 15150
+    },
+    "15": {
+      "path": "referencias/ibge/matriz_pesos_raca/current/15.parquet",
+      "sha256": "a6fcc882eb650089a494384d85813d92a8facb02a5f7b46baab5d08e8fb71f70",
+      "rows": 145440
+    },
+    "16": {
+      "path": "referencias/ibge/matriz_pesos_raca/current/16.parquet",
+      "sha256": "fb5207b972c453917889e1144fb6f6700322c10c148de986d2900b659177652f",
+      "rows": 16160
+    },
+    "17": {
+      "path": "referencias/ibge/matriz_pesos_raca/current/17.parquet",
+      "sha256": "5b2ff15d0dc05a4d88c8a68f9526ca2aa46ee02623406fcb90cc16a011bd152c",
+      "rows": 140390
+    },
+    "21": {
+      "path": "referencias/ibge/matriz_pesos_raca/current/21.parquet",
+      "sha256": "ef2d3cb3fb3216f65802b1359bd0f6f1fafc153f714f42b947990212495eb428",
+      "rows": 219170
+    },
+    "22": {
+      "path": "referencias/ibge/matriz_pesos_raca/current/22.parquet",
+      "sha256": "409e0793337b99e0c350f52b5a61b32d383bdd073a74bc2bc571a580077f470b",
+      "rows": 226240
+    },
+    "23": {
+      "path": "referencias/ibge/matriz_pesos_raca/current/23.parquet",
+      "sha256": "bf435b4143367f8d81d32a8dfa3797f2eb1168868f3c91524eee600f4d4f6af9",
+      "rows": 185840
+    },
+    "24": {
+      "path": "referencias/ibge/matriz_pesos_raca/current/24.parquet",
+      "sha256": "a23a2a5c8e8e8bed44e22ea78e2990ba01fa7395990234bf9d62fa25abb37e8d",
+      "rows": 168670
+    },
+    "25": {
+      "path": "referencias/ibge/matriz_pesos_raca/current/25.parquet",
+      "sha256": "afb1097864ff83a1567eba2aab6b1e67784028181fd9a520eb88b1d8ff0b1e34",
+      "rows": 225230
+    },
+    "26": {
+      "path": "referencias/ibge/matriz_pesos_raca/current/26.parquet",
+      "sha256": "d26d7550c78b68eb8e85dda4f41485e686787fd127e6f28fe7160e40c2753f83",
+      "rows": 186850
+    },
+    "27": {
+      "path": "referencias/ibge/matriz_pesos_raca/current/27.parquet",
+      "sha256": "b7a526c588a4a15907a7b8c44e3c43f54e96bbbeb4ba82aebfe2c2e72531f269",
+      "rows": 103020
+    },
+    "28": {
+      "path": "referencias/ibge/matriz_pesos_raca/current/28.parquet",
+      "sha256": "175c375f213fef67f30c4c2685d8c551219da6efc5dbd4134ccc9e281972a807",
+      "rows": 75750
+    },
+    "29": {
+      "path": "referencias/ibge/matriz_pesos_raca/current/29.parquet",
+      "sha256": "d52c4f33a19f7fcb88c5311e558e0fefc8da4e83a49238301a19891f4ba8d3a3",
+      "rows": 421170
+    },
+    "31": {
+      "path": "referencias/ibge/matriz_pesos_raca/current/31.parquet",
+      "sha256": "e203ce6b092c20dd16763d9129d1e06ceb3f3ef051d5783f5c2cea2fcfff41ba",
+      "rows": 861530
+    },
+    "32": {
+      "path": "referencias/ibge/matriz_pesos_raca/current/32.parquet",
+      "sha256": "73405c120bf5beb958b98f4cac9ea9e0c80945f94cc53ad9a7ce619ef7306f73",
+      "rows": 78780
+    },
+    "33": {
+      "path": "referencias/ibge/matriz_pesos_raca/current/33.parquet",
+      "sha256": "84e347ac12dbe2faa501fa02dc386e33220b47952d4186c6fbfacfd33a538c9b",
+      "rows": 92920
+    },
+    "35": {
+      "path": "referencias/ibge/matriz_pesos_raca/current/35.parquet",
+      "sha256": "b5b6fa1aa7b83136df922548f69846dc19661d7d78abd835ef553bb3fa12919a",
+      "rows": 651450
+    },
+    "41": {
+      "path": "referencias/ibge/matriz_pesos_raca/current/41.parquet",
+      "sha256": "0782330c34212caf73f6219ce35403dc6d006324a43d14701c940af31322a573",
+      "rows": 402990
+    },
+    "42": {
+      "path": "referencias/ibge/matriz_pesos_raca/current/42.parquet",
+      "sha256": "53b6942bb3bbc9bf78d8ef8e3525eb33e75c6eca09a9954baf24b7094da949ab",
+      "rows": 297950
+    },
+    "43": {
+      "path": "referencias/ibge/matriz_pesos_raca/current/43.parquet",
+      "sha256": "973b3d7a44ffeaf8aea1e64196d75d6df5b3ecfaaedfb5f7beb71af8ee0912d6",
+      "rows": 501970
+    },
+    "50": {
+      "path": "referencias/ibge/matriz_pesos_raca/current/50.parquet",
+      "sha256": "57fb8ccefdf71554327a4ac9ba6f74edb9cdd40b792afa0480d87713aadbf8fb",
+      "rows": 79790
+    },
+    "51": {
+      "path": "referencias/ibge/matriz_pesos_raca/current/51.parquet",
+      "sha256": "89f7f9098dfd6b6ced479cd452129cdace2575204819b4975124019fa4c51fb5",
+      "rows": 142410
+    },
+    "52": {
+      "path": "referencias/ibge/matriz_pesos_raca/current/52.parquet",
+      "sha256": "e4cd25b63db24044c47148e6df4d574e9919bd9d9c8933744a4c547a8808a551",
+      "rows": 248460
+    },
+    "53": {
+      "path": "referencias/ibge/matriz_pesos_raca/current/53.parquet",
+      "sha256": "dccec5678584f73f656b13000dccbadd745ae33e6b74e0856a1aeb5160a13745",
+      "rows": 1010
+    }
+  }
+}

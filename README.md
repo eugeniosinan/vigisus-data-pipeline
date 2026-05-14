@@ -15,6 +15,8 @@ pasta `current/` e substituida pela versao mais recente.
 .
   gerar_cnes.py
   gerar_populacao.py
+  gerar_populacao_raca_censo.py
+  gerar_matriz_pesos_raca.py
   gerar_uf.py
   gerar_municipios.py
   gerar_calendario_epidemiologico.py
@@ -29,6 +31,8 @@ pasta `current/` e substituida pela versao mais recente.
     raw/
       cnes/estabelecimentos/
       ibge/populacao/
+      ibge/populacao_raca_censo/
+      ibge/matriz_pesos_raca/
       ibge/uf/
       ibge/municipios/
       vigilancia/calendario_epidemiologico/
@@ -36,6 +40,8 @@ pasta `current/` e substituida pela versao mais recente.
     processed/
       cnes/estabelecimentos/
       ibge/populacao/
+      ibge/populacao_raca_censo/
+      ibge/matriz_pesos_raca/
       ibge/uf/
       ibge/municipios/
       vigilancia/calendario_epidemiologico/
@@ -48,6 +54,14 @@ pasta `current/` e substituida pela versao mais recente.
           current/{uf}.parquet
 
         ibge/populacao/
+          manifest.json
+          current/{uf}.parquet
+
+        ibge/populacao_raca_censo/
+          manifest.json
+          current/{uf}.parquet
+
+        ibge/matriz_pesos_raca/
           manifest.json
           current/{uf}.parquet
 
@@ -73,6 +87,8 @@ pasta `current/` e substituida pela versao mais recente.
 | --- | --- | --- | --- |
 | CNES - Estabelecimentos | `gerar_cnes.py` | Parquet por UF | Diaria via GitHub Actions |
 | Populacao POPSVS | `gerar_populacao.py` | Parquet por UF | Mensal via GitHub Actions |
+| Populacao por raca/cor Censo 2022 | `gerar_populacao_raca_censo.py` | Parquet por UF | Estavel, sem cron |
+| Matriz de pesos por raca/cor | `gerar_matriz_pesos_raca.py` | Parquet por UF | Estavel, sem cron |
 | UF | `gerar_uf.py` | Arquivo nacional unico | Estavel, sem cron |
 | Municipios | `gerar_municipios.py` | Arquivo nacional unico | Estavel, sem cron |
 | Calendario epidemiologico | `gerar_calendario_epidemiologico.py` | Arquivo nacional unico | Estavel, sem cron |
@@ -95,6 +111,8 @@ Formato:
     "uf": "referencias/ibge/uf/manifest.json",
     "municipios": "referencias/ibge/municipios/manifest.json",
     "populacao": "referencias/ibge/populacao/manifest.json",
+    "populacao_raca_censo": "referencias/ibge/populacao_raca_censo/manifest.json",
+    "matriz_pesos_raca": "referencias/ibge/matriz_pesos_raca/manifest.json",
     "calendario_epidemiologico": "referencias/vigilancia/calendario_epidemiologico/manifest.json"
   }
 }
@@ -244,6 +262,133 @@ O manifest informa:
 
 Quando aparecer `POPSBR26.zip`, o checker mensal passara a publicar `2024-2026`
 e removera `2023` da pasta publicada.
+
+## Populacao por Raca/Cor Censo 2022
+
+Fonte:
+
+```text
+SIDRA IBGE v1
+Tabela 9606
+Variavel 93 - Populacao residente
+Censo Demografico 2022
+```
+
+Script:
+
+```text
+gerar_populacao_raca_censo.py
+```
+
+Funcionamento:
+
+1. Consulta a API SIDRA para cada UF.
+2. Usa municipio, sexo, idade simples e raca/cor.
+3. Quebra as consultas por blocos de idade para respeitar limites da API.
+4. Publica um Parquet por UF.
+5. Mantem `data/raw/ibge/populacao_raca_censo/2022/` e
+   `data/processed/ibge/populacao_raca_censo/` como cache local.
+
+Publicacao:
+
+```text
+data/publish/referencias/ibge/populacao_raca_censo/current/11.parquet
+data/publish/referencias/ibge/populacao_raca_censo/current/12.parquet
+data/publish/referencias/ibge/populacao_raca_censo/current/33.parquet
+```
+
+Colunas publicadas:
+
+```text
+ano_censo
+co_municipio_ibge
+co_municipio
+co_uf
+sexo
+no_sexo
+idade
+co_raca_cor
+co_raca_cor_sidra
+no_raca_cor
+pop
+```
+
+Codificacao interna de raca/cor:
+
+```text
+1 branca
+2 preta
+3 amarela
+4 parda
+5 indigena
+```
+
+Esta referencia representa o dado censitario atomico de 2022. Ela nao e uma
+projecao anual.
+
+## Matriz de Pesos por Raca/Cor
+
+Script:
+
+```text
+gerar_matriz_pesos_raca.py
+```
+
+Entrada:
+
+```text
+data/publish/referencias/ibge/populacao_raca_censo/current/{uf}.parquet
+```
+
+Publicacao:
+
+```text
+data/publish/referencias/ibge/matriz_pesos_raca/current/11.parquet
+data/publish/referencias/ibge/matriz_pesos_raca/current/12.parquet
+data/publish/referencias/ibge/matriz_pesos_raca/current/33.parquet
+```
+
+Colunas publicadas:
+
+```text
+ano_censo
+co_municipio_ibge
+co_municipio
+co_uf
+sexo
+no_sexo
+idade
+co_raca_cor
+co_raca_cor_sidra
+no_raca_cor
+pop_raca
+pop_total_grupo
+peso_raca
+```
+
+Calculo:
+
+```text
+peso_raca = pop_raca / pop_total_grupo
+```
+
+Onde `pop_total_grupo` e o total da celula:
+
+```text
+ano_censo + municipio + sexo + idade
+```
+
+Uso metodologico no VigiSUS-BR:
+
+```text
+PopEstimada(ano, mun, sexo, idade, raca) =
+  TotalProjetadoDATASUS(ano, mun, sexo, idade) * PesoRacaCenso2022(mun, sexo, idade, raca)
+```
+
+Para os anos posteriores a 2022, a matriz usa os pesos raciais estaveis do
+Censo 2022. O Censo 2010 nao e usado nesta versao do pipeline porque a
+referencia operacional de populacao do VigiSUS-BR trabalha com os anos recentes
+do POPSVS.
 
 ## UF
 
@@ -421,6 +566,8 @@ Executar todas as referencias:
 ```powershell
 python gerar_cnes.py
 python gerar_populacao.py
+python gerar_populacao_raca_censo.py
+python gerar_matriz_pesos_raca.py
 python gerar_uf.py
 python gerar_municipios.py
 python gerar_calendario_epidemiologico.py
@@ -432,6 +579,8 @@ Executar apenas referencias estaveis:
 python gerar_uf.py
 python gerar_municipios.py
 python gerar_calendario_epidemiologico.py
+python gerar_populacao_raca_censo.py
+python gerar_matriz_pesos_raca.py
 ```
 
 Validar JSON dos manifests:
@@ -440,6 +589,8 @@ Validar JSON dos manifests:
 python -m json.tool data/publish/manifest.json > $null
 python -m json.tool data/publish/referencias/cnes/estabelecimentos/manifest.json > $null
 python -m json.tool data/publish/referencias/ibge/populacao/manifest.json > $null
+python -m json.tool data/publish/referencias/ibge/populacao_raca_censo/manifest.json > $null
+python -m json.tool data/publish/referencias/ibge/matriz_pesos_raca/manifest.json > $null
 python -m json.tool data/publish/referencias/ibge/uf/manifest.json > $null
 python -m json.tool data/publish/referencias/ibge/municipios/manifest.json > $null
 python -m json.tool data/publish/referencias/vigilancia/calendario_epidemiologico/manifest.json > $null
@@ -448,7 +599,7 @@ python -m json.tool data/publish/referencias/vigilancia/calendario_epidemiologic
 Validar sintaxe dos scripts:
 
 ```powershell
-python -m py_compile gerar_cnes.py gerar_populacao.py gerar_uf.py gerar_municipios.py gerar_calendario_epidemiologico.py
+python -m py_compile gerar_cnes.py gerar_populacao.py gerar_populacao_raca_censo.py gerar_matriz_pesos_raca.py gerar_uf.py gerar_municipios.py gerar_calendario_epidemiologico.py
 ```
 
 ## Como o VigiSUS-BR Consome
@@ -465,6 +616,8 @@ Exemplos:
   por `co_municipio_gestor`.
 - Populacao: baixar `referencias/ibge/populacao/current/33.parquet` e filtrar
   por `co_municipio_ibge`.
+- Matriz racial: baixar `referencias/ibge/matriz_pesos_raca/current/33.parquet`
+  e aplicar `peso_raca` sobre a populacao POPSVS projetada.
 - UF, municipios e calendario: baixar o arquivo nacional unico.
 
 ## Fontes de Dados
@@ -479,6 +632,13 @@ Populacao:
   `ftp://ftp.datasus.gov.br/dissemin/publicos/IBGE/POPSVS/`
 - TABNET oficial do Ministerio da Saude informa a fonte POPSVS:
   https://tabnet.datasus.gov.br/cgi/deftohtm.exe?ibge%2Fcnv%2Fpopsvs2024br.def=
+
+Populacao por raca/cor e matriz de pesos:
+
+- SIDRA IBGE v1:
+  https://apisidra.ibge.gov.br/
+- Tabela 9606, Censo Demografico 2022, populacao residente por municipio,
+  sexo, idade e cor ou raca.
 
 UF e municipios:
 

@@ -1,0 +1,150 @@
+{
+  "reference_id": "populacao_raca_censo",
+  "title": "IBGE Censo 2022 - Populacao por Raca/Cor",
+  "version": "2022",
+  "partition": "uf",
+  "municipality_filter_column": "co_municipio_ibge",
+  "generated_at_utc": "2026-05-14T15:53:36.089346+00:00",
+  "source": "SIDRA IBGE v1",
+  "source_table": "9606",
+  "source_variable": "93",
+  "source_url": "https://apisidra.ibge.gov.br/values",
+  "rows": 5625700,
+  "files": {
+    "11": {
+      "path": "referencias/ibge/populacao_raca_censo/current/11.parquet",
+      "sha256": "ffa87150d3511a20e5fb2201e747841620385081b9f9ec5611b12b1bbf02791e",
+      "rows": 52520
+    },
+    "12": {
+      "path": "referencias/ibge/populacao_raca_censo/current/12.parquet",
+      "sha256": "25e8fecee776abaa5cb027c16cf4ab138433432a44268d04610a87943d501696",
+      "rows": 22220
+    },
+    "13": {
+      "path": "referencias/ibge/populacao_raca_censo/current/13.parquet",
+      "sha256": "307e389f272eb48d7464ad6dcc47ad816f05712f39193b5af2367500a1c20cfa",
+      "rows": 62620
+    },
+    "14": {
+      "path": "referencias/ibge/populacao_raca_censo/current/14.parquet",
+      "sha256": "2baab1d343266778845d4c0f083fa138e67537aea26452d7860104a01579838d",
+      "rows": 15150
+    },
+    "15": {
+      "path": "referencias/ibge/populacao_raca_censo/current/15.parquet",
+      "sha256": "ee8c4ddc99923b518881e0955808baeb3842a0ab0f3fe23358aeddb98ae9f995",
+      "rows": 145440
+    },
+    "16": {
+      "path": "referencias/ibge/populacao_raca_censo/current/16.parquet",
+      "sha256": "161888e3c5fbcadd33d6acfe7be40290001e6d7ce955255768cc5af71984c8f3",
+      "rows": 16160
+    },
+    "17": {
+      "path": "referencias/ibge/populacao_raca_censo/current/17.parquet",
+      "sha256": "0aa52e8373b684b00101726b33e0b806157c6df8b0e8b1c176a6cd7de930b9fc",
+      "rows": 140390
+    },
+    "21": {
+      "path": "referencias/ibge/populacao_raca_censo/current/21.parquet",
+      "sha256": "391ac669b043a54c94971def6945def165635e7d30ec70ea1f8da03ffed58b73",
+      "rows": 219170
+    },
+    "22": {
+      "path": "referencias/ibge/populacao_raca_censo/current/22.parquet",
+      "sha256": "324879853d122edfdd635d8bd0406327cc2a01749c81ecf13803be551749f2ac",
+      "rows": 226240
+    },
+    "23": {
+      "path": "referencias/ibge/populacao_raca_censo/current/23.parquet",
+      "sha256": "cad4ca70ef36138b6e74a105ee8a1488a7981f9fa54539be783834f7c0c04339",
+      "rows": 185840
+    },
+    "24": {
+      "path": "referencias/ibge/populacao_raca_censo/current/24.parquet",
+      "sha256": "01fd534e88e8eda446f46ed7db6d5dbd03cd30eb6a8c4b8434e08ace2ff3a402",
+      "rows": 168670
+    },
+    "25": {
+      "path": "referencias/ibge/populacao_raca_censo/current/25.parquet",
+      "sha256": "4bb8be40b359f0f56cf89f0fb7c2112d6683823ed01c0c0b4ea24b36fcc440d4",
+      "rows": 225230
+    },
+    "26": {
+      "path": "referencias/ibge/populacao_raca_censo/current/26.parquet",
+      "sha256": "cff2570e1c5e78017be7c243ba9c0134b5c7606b50875cd1b3d6c16444908998",
+      "rows": 186850
+    },
+    "27": {
+      "path": "referencias/ibge/populacao_raca_censo/current/27.parquet",
+      "sha256": "3eb7f7d2fd6adc09191045641fe66d2fded6d3feca831a3b41afde764b10b9e6",
+      "rows": 103020
+    },
+    "28": {
+      "path": "referencias/ibge/populacao_raca_censo/current/28.parquet",
+      "sha256": "f0e61c25251cc05f2f0514445c86cdb8891705663fce85d056a75a8665c098cb",
+      "rows": 75750
+    },
+    "29": {
+      "path": "referencias/ibge/populacao_raca_censo/current/29.parquet",
+      "sha256": "d48ea58d824c9ec2915439b54cea5adca93fe94afd55c2160d0a6e6fa7d3d84b",
+      "rows": 421170
+    },
+    "31": {
+      "path": "referencias/ibge/populacao_raca_censo/current/31.parquet",
+      "sha256": "1b7900c4a7eb445c0857e528cbb52ea398c4d4f71f4888071e35837d87462e81",
+      "rows": 861530
+    },
+    "32": {
+      "path": "referencias/ibge/populacao_raca_censo/current/32.parquet",
+      "sha256": "f3821812efcc94dcbf36510cf63aacb225dfbd09214b0f7e43354f2bae4e872b",
+      "rows": 78780
+    },
+    "33": {
+      "path": "referencias/ibge/populacao_raca_censo/current/33.parquet",
+      "sha256": "2d64a4b281e149e93f7fbb2020d75af299c4fdacd01b36d703d149c1f370526f",
+      "rows": 92920
+    },
+    "35": {
+      "path": "referencias/ibge/populacao_raca_censo/current/35.parquet",
+      "sha256": "86e6b3145ba9c757dfa919049c6218d6c0301e5d6304663b1c985a294e96346c",
+      "rows": 651450
+    },
+    "41": {
+      "path": "referencias/ibge/populacao_raca_censo/current/41.parquet",
+      "sha256": "06c6347a692737c5678e3fb3d1563666c5089af1b1df43aa12495c34933cd567",
+      "rows": 402990
+    },
+    "42": {
+      "path": "referencias/ibge/populacao_raca_censo/current/42.parquet",
+      "sha256": "6c425430c7dbb9d8633c5d7ffa36d6bc7e1842ad198fbaed9371efa2de207b43",
+      "rows": 297950
+    },
+    "43": {
+      "path": "referencias/ibge/populacao_raca_censo/current/43.parquet",
+      "sha256": "e157a3a56fefb16792276991becbece690dc294f47407d025b0cf8cc52909ad0",
+      "rows": 501970
+    },
+    "50": {
+      "path": "referencias/ibge/populacao_raca_censo/current/50.parquet",
+      "sha256": "df34bd35002695c33f1d0d81604aefc1974d1371cb9e8b4a2f4d6171eca187ac",
+      "rows": 79790
+    },
+    "51": {
+      "path": "referencias/ibge/populacao_raca_censo/current/51.parquet",
+      "sha256": "44b3e965ec9c772354a974631d8706024a51d906d4ed5ab7bcc1f451153fcf7a",
+      "rows": 142410
+    },
+    "52": {
+      "path": "referencias/ibge/populacao_raca_censo/current/52.parquet",
+      "sha256": "97377921dbded88eb81ddb2717bd2945242a42769752a9a741d92a0f95c9d9c6",
+      "rows": 248460
+    },
+    "53": {
+      "path": "referencias/ibge/populacao_raca_censo/current/53.parquet",
+      "sha256": "ffd8d5eda5d4c0806fd0d1ba336a500dc1e84f3d625f3bd8b44b2b97e927ce15",
+      "rows": 1010
+    }
+  }
+}
