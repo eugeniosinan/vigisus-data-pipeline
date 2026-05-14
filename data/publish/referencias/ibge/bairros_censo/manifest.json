@@ -1,0 +1,57 @@
+{
+  "reference_id": "bairros_censo",
+  "title": "IBGE Censo 2022 - Agregados por Bairros",
+  "version": "2022-20250417",
+  "generated_at_utc": "2026-05-14T23:34:57.650401+00:00",
+  "source": "https://ftp.ibge.gov.br/Censos/Censo_Demografico_2022/Agregados_por_Setores_Censitarios/Agregados_por_Bairro_csv/Agregados_por_bairros_basico_BR_20250417.zip",
+  "update_policy": "Referencia estatica sem cron; copia mantida no repositorio.",
+  "file": {
+    "path": "referencias/ibge/bairros_censo/current/bairros_censo_2022.parquet",
+    "sha256": "7a2558a844258e815196155f72ef2ba7fde9a650dcfb959304af00908404131c",
+    "rows": 17576,
+    "columns": [
+      "cd_bairro",
+      "nm_bairro",
+      "cd_regiao",
+      "nm_regiao",
+      "cd_uf",
+      "nm_uf",
+      "cd_mun",
+      "nm_mun",
+      "cd_dist",
+      "nm_dist",
+      "cd_subdist",
+      "nm_subdist",
+      "cd_nu",
+      "nm_nu",
+      "cd_aglom",
+      "nm_aglom",
+      "cd_rgint",
+      "nm_rgint",
+      "cd_rgi",
+      "nm_rgi",
+      "cd_concurb",
+      "nm_concurb",
+      "area_km2",
+      "v0001",
+      "v0002",
+      "v0003",
+      "v0004",
+      "v0005",
+      "v0006",
+      "v0007"
+    ]
+  },
+  "source_files": {
+    "zip_path": "referencias/ibge/bairros_censo/source/Agregados_por_bairros_basico_BR_20250417.zip",
+    "zip_sha256": "e89b2b65460a0111ec9411a6da75b35a4fb398854cdf8062a4c010bce3db7cc2",
+    "csv_path": "referencias/ibge/bairros_censo/source/Agregados_por_bairros_basico_BR.csv",
+    "csv_sha256": "1e4dfa6b869b218d500c200161e932239f593cd4db45ab51c9bac4a14fa7ef93"
+  },
+  "main_fields": {
+    "neighborhood_name": "nm_bairro",
+    "municipality_code": "cd_mun",
+    "municipality_name": "nm_mun",
+    "population_2022": "v0001"
+  }
+}

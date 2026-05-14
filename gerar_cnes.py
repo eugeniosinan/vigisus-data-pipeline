@@ -94,6 +94,7 @@ def write_global_manifest() -> None:
             "populacao": "referencias/ibge/populacao/manifest.json",
             "populacao_raca_censo": "referencias/ibge/populacao_raca_censo/manifest.json",
             "matriz_pesos_raca": "referencias/ibge/matriz_pesos_raca/manifest.json",
+            "bairros_censo": "referencias/ibge/bairros_censo/manifest.json",
             "cid10": "referencias/saude/cid10/manifest.json",
             "calendario_epidemiologico": (
                 "referencias/vigilancia/calendario_epidemiologico/manifest.json"
