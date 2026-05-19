@@ -1,145 +1,145 @@
 {
   "reference_id": "cnes_estabelecimentos",
   "title": "CNES - Estabelecimentos",
-  "version": "202603",
+  "version": "202604",
   "partition": "uf",
   "municipality_filter_column": "co_municipio_gestor",
-  "generated_at_utc": "2026-05-06T12:56:17.496389+00:00",
+  "generated_at_utc": "2026-05-19T10:14:00.043519+00:00",
   "files": {
     "11": {
       "path": "referencias/cnes/estabelecimentos/current/11.parquet",
-      "sha256": "85dfed68c533340da7a0d5c8c0adb5bd3cec36d38cdb9396eed27c639cd184b7",
-      "rows": 7010
+      "sha256": "e8b16a85756f38d42de62eeabfa7e4ff8b83bc6ab95cbcd7e88d5a021e447216",
+      "rows": 7076
     },
     "12": {
       "path": "referencias/cnes/estabelecimentos/current/12.parquet",
-      "sha256": "dacfc9f84cb49242f886ba9be22e00cd66a301e8d3f8d160e13bb1018ebda1da",
-      "rows": 2036
+      "sha256": "f9215315ffb129a400849aa005f1da3942b3fdda24919fc0a1c85a2590026f76",
+      "rows": 2045
     },
     "13": {
       "path": "referencias/cnes/estabelecimentos/current/13.parquet",
-      "sha256": "f05e8310fa32762aeb9e9097dba9457238a21ff1035b7d4c9f7ae13804347847",
-      "rows": 4401
+      "sha256": "62f786131aa6febe20673fa0765ec720bdb3effd2a78e77dd9c6ae7bedda980c",
+      "rows": 4433
     },
     "14": {
       "path": "referencias/cnes/estabelecimentos/current/14.parquet",
-      "sha256": "fbae5e90fb26f7599cf73ee2e0be6bfbf038d2ccfa7d654fcd4d866f762a2776",
-      "rows": 1676
+      "sha256": "3abe5f49e324846e0a99144484b0ef15d185c5036be401d003ed7a3bdaae5768",
+      "rows": 1727
     },
     "15": {
       "path": "referencias/cnes/estabelecimentos/current/15.parquet",
-      "sha256": "2b1d9f078c4884a4f39f5bc447d34055e471856fc8fe154183e63f00c09bbf4f",
-      "rows": 12042
+      "sha256": "1fd1b4a65bc0577342862bc1dd5b70b53173aaa06fb9c5d4ce84094df3536db3",
+      "rows": 12158
     },
     "16": {
       "path": "referencias/cnes/estabelecimentos/current/16.parquet",
-      "sha256": "5981bf4153c4e5d42442c66800a24a889889f915435bd8cb5250ee4f431ecbf2",
-      "rows": 1273
+      "sha256": "fe5350de789a59bc7e2774578943a02ff7231f4cdefe54f5079c8ac5d1bc2859",
+      "rows": 1280
     },
     "17": {
       "path": "referencias/cnes/estabelecimentos/current/17.parquet",
-      "sha256": "c84d68bf3bb6eb4114d06c25764dd7b19bdd00144ce0018814b95f2c389f1e5f",
-      "rows": 3471
+      "sha256": "e10ca45df81c54b16108c5105ba2648768626515a3df22cd5b15694da471852e",
+      "rows": 3492
     },
     "21": {
       "path": "referencias/cnes/estabelecimentos/current/21.parquet",
-      "sha256": "3a9b5fa70a7499e73da6c68e5ffd21f930d4b3e00bcd167ab3eab4e768803575",
-      "rows": 9188
+      "sha256": "a19ad17f315d251d8582b8946a4ce71a2c92e2ba4f6c8fa80082a38b3dc35ecd",
+      "rows": 9272
     },
     "22": {
       "path": "referencias/cnes/estabelecimentos/current/22.parquet",
-      "sha256": "524ec45efd90194aacf7c1bba59535319f5486c7429b2ad0b6f04e48519ca0b9",
-      "rows": 6203
+      "sha256": "33abb630503435bbcef90513e9f3b1a52f631038423975fdb8feae267d228458",
+      "rows": 6243
     },
     "23": {
       "path": "referencias/cnes/estabelecimentos/current/23.parquet",
-      "sha256": "457685dc13ca44ee6f16d02646addc6e9ba29a1785daddb0db7e78b334a1573a",
-      "rows": 18642
+      "sha256": "6c5c0551d596c6fda472b57efaa41952a854814ad8efd2e9f537f4e2e775e305",
+      "rows": 18782
     },
     "24": {
       "path": "referencias/cnes/estabelecimentos/current/24.parquet",
-      "sha256": "59f485f1b152f09a770e18cce85c839b63f0f3a076e3111305a2caa60e7718ef",
-      "rows": 7515
+      "sha256": "0de061a99ffef107672fd83247303764a20999daff027ddb6fb7903541d6331b",
+      "rows": 7577
     },
     "25": {
       "path": "referencias/cnes/estabelecimentos/current/25.parquet",
-      "sha256": "c1996195b51b1025c478a7b23dcd68de8d03c4dc286a3ca6c4cc8e9ceb651ca8",
-      "rows": 10407
+      "sha256": "a3cdaa351e0cfda952c25afa90db851e50c91a1cd3a52fca8c2a90be7f83765b",
+      "rows": 10484
     },
     "26": {
       "path": "referencias/cnes/estabelecimentos/current/26.parquet",
-      "sha256": "632aad8181f53a4db8bf016597e37cb4af3f3b5a2949f9ddf11f3053bb4c9387",
-      "rows": 17405
+      "sha256": "9e8317fdab4dfce65c5d327871ac454b28aa089f62644e69e28623e7aa108b6c",
+      "rows": 17563
     },
     "27": {
       "path": "referencias/cnes/estabelecimentos/current/27.parquet",
-      "sha256": "db458aec9bc9309a3b295d128a77bc16182a0746d0a259ce2a6d954116f8f25e",
-      "rows": 5353
+      "sha256": "bede9cbf922bfbcbecf636fb5204d95a9dce4be328f3beab4eee93fbd3ce02b7",
+      "rows": 5386
     },
     "28": {
       "path": "referencias/cnes/estabelecimentos/current/28.parquet",
-      "sha256": "1e0a97a846a42d504faae16da214e4f623e11052991e98c82f92dd679bb8f63d",
-      "rows": 5802
+      "sha256": "26a5c33ad89b6ff0ed1905f12d1910555678c5bbe541063f5b031bb0fa5bcef0",
+      "rows": 5877
     },
     "29": {
       "path": "referencias/cnes/estabelecimentos/current/29.parquet",
-      "sha256": "00f123e19a1d1dec34bdf90a3516eb519934fe42239f79879f69a1a562678f06",
-      "rows": 28891
+      "sha256": "18355238f65eea6695214b833be7f212cbe5c928ac60c2808b8d6a3a5f76ed83",
+      "rows": 29099
     },
     "31": {
       "path": "referencias/cnes/estabelecimentos/current/31.parquet",
-      "sha256": "f80650cb472dfc45888e2e1b0f38a39cc23757955f4e95b3f007867d7eb50bf0",
-      "rows": 75391
+      "sha256": "aedcca9fbca9fcb7c641904f08706107c524d4005acf713c7c075239dee114a4",
+      "rows": 76145
     },
     "32": {
       "path": "referencias/cnes/estabelecimentos/current/32.parquet",
-      "sha256": "451a24b0c19631e2de8909df684660c499c9406305cfea6bfcb47e96403a0b6a",
-      "rows": 12688
+      "sha256": "e27f454d48d949f8a02aa8b8551d91408fc27a21de17a822b596abb4abc7fb51",
+      "rows": 12785
     },
     "33": {
       "path": "referencias/cnes/estabelecimentos/current/33.parquet",
-      "sha256": "3a57ae603bd2a6a8dcc0446d8458687a1e237d7d6dd9297772bd9c27bdebf47f",
-      "rows": 56263
+      "sha256": "4354d4316399c7a1240bbf275c5df4ae2cea29504860a2933bb5a2f772ac7e49",
+      "rows": 56650
     },
     "35": {
       "path": "referencias/cnes/estabelecimentos/current/35.parquet",
-      "sha256": "d386db6474bc27691782df5bad762f4f35b55e6610244770f88f8f19a76fa6d2",
-      "rows": 148352
+      "sha256": "1198ced394d865f97eff1fa6d1fce85d4187d8aec17c219fa736be0a21713b74",
+      "rows": 149533
     },
     "41": {
       "path": "referencias/cnes/estabelecimentos/current/41.parquet",
-      "sha256": "725d190a880af952e2048204a0fec12716fed498ecb6cae0af341236553be295",
-      "rows": 42207
+      "sha256": "cf11fc9e98a8bc3d4e2d485020066416fdea67cf42a513ef88e50982eed13520",
+      "rows": 42578
     },
     "42": {
       "path": "referencias/cnes/estabelecimentos/current/42.parquet",
-      "sha256": "7d85590fae460dfd2a18680b5da782245b4042b5c1409c7b45c92ab40247745b",
-      "rows": 34260
+      "sha256": "f1ae5052b1bd7db941b3df932462925f0c4418533c5602e9a93248656d895229",
+      "rows": 34853
     },
     "43": {
       "path": "referencias/cnes/estabelecimentos/current/43.parquet",
-      "sha256": "d2a4cd65103e3ec2d86c22e6316e24702bbce3958bf7ee8976cfaa9218db6a70",
-      "rows": 47106
+      "sha256": "3caa0448c9c60bb7602912073c569bbd39c3f76435ac9f0e15e3ba015691fca2",
+      "rows": 47688
     },
     "50": {
       "path": "referencias/cnes/estabelecimentos/current/50.parquet",
-      "sha256": "cf0c2f368ccdb1b8b56b8d4a1d79a036d3a8dcc43170ff4aaa2f06e1871693c7",
-      "rows": 9047
+      "sha256": "f06b92b277ecc6f175cba601fc04517c9a70149ddb809c84efc82aa28d335829",
+      "rows": 9138
     },
     "51": {
       "path": "referencias/cnes/estabelecimentos/current/51.parquet",
-      "sha256": "5b3358081646f33b327f60e25668733a49e499ebe0395c8e4aa855dd869f43cb",
-      "rows": 13301
+      "sha256": "73fa3d9e2aa52518682dd3955fa9cba998eedb9c39830cf2358dc7501459d3d2",
+      "rows": 13401
     },
     "52": {
       "path": "referencias/cnes/estabelecimentos/current/52.parquet",
-      "sha256": "a2c2406967e486a2ff42b55d09836ba6202acaeec934e77d1bc4365fe0e29474",
-      "rows": 17703
+      "sha256": "83617691e4d14d68177f18a14c2798e1647e3cb14b3250396eb9558edb39d3bb",
+      "rows": 17924
     },
     "53": {
       "path": "referencias/cnes/estabelecimentos/current/53.parquet",
-      "sha256": "b8d595696a174ec3c850e9221e6450285343689c954ccfdbfc5e1de06be6d16e",
-      "rows": 12153
+      "sha256": "66db700a71b5ef9927153e62cdf1caf8214f79d02ddfb6f6cb86f78db024c618",
+      "rows": 12212
     }
   }
 }

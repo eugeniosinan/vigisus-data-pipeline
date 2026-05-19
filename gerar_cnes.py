@@ -10,6 +10,7 @@ import hashlib
 import json
 import re
 import shutil
+import time
 import zipfile
 from datetime import datetime, timezone
 from pathlib import Path
@@ -37,10 +38,32 @@ GLOBAL_MANIFEST = PUBLISH_ROOT / "manifest.json"
 DEFAULT_ENCODING = "latin-1"
 CSV_SEPARATOR = ";"
 CSV_QUOTECHAR = '"'
+DEFAULT_RETRIES = 5
+DEFAULT_RETRY_DELAY = 20
+FTP_RETRY_ERRORS = ftplib.all_errors + (OSError,)
 
 
 def utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+def retry_ftp(operation, description: str, retries: int = DEFAULT_RETRIES):
+    last_error: Exception | None = None
+    for attempt in range(1, retries + 1):
+        try:
+            return operation()
+        except FTP_RETRY_ERRORS as exc:
+            last_error = exc
+            if attempt == retries:
+                break
+            wait_seconds = DEFAULT_RETRY_DELAY * attempt
+            print(
+                f"{description} falhou na tentativa {attempt}/{retries}: {exc}. "
+                f"Nova tentativa em {wait_seconds}s."
+            )
+            time.sleep(wait_seconds)
+
+    raise RuntimeError(f"{description} falhou apos {retries} tentativas: {last_error}")
 
 
 def find_latest_cnes_file(ftp: ftplib.FTP) -> str:
@@ -59,10 +82,13 @@ def find_latest_cnes_file(ftp: ftplib.FTP) -> str:
 
 
 def get_latest_remote_file() -> str:
-    with ftplib.FTP(FTP_HOST, timeout=120) as ftp:
-        ftp.login()
-        ftp.cwd(FTP_DIR)
-        return find_latest_cnes_file(ftp)
+    def operation() -> str:
+        with ftplib.FTP(FTP_HOST, timeout=180) as ftp:
+            ftp.login()
+            ftp.cwd(FTP_DIR)
+            return find_latest_cnes_file(ftp)
+
+    return retry_ftp(operation, "Consulta do arquivo CNES mais recente")
 
 
 def file_competencia(file_name: str) -> str:
@@ -117,12 +143,20 @@ def download_file(file_name: str, output_dir: Path = RAW_DIR, overwrite: bool = 
     if temp_file.exists():
         temp_file.unlink()
 
-    with ftplib.FTP(FTP_HOST, timeout=120) as ftp:
-        ftp.login()
-        ftp.cwd(FTP_DIR)
+    def operation() -> Path:
+        if temp_file.exists():
+            temp_file.unlink()
 
-        with temp_file.open("wb") as file_handle:
-            ftp.retrbinary(f"RETR {file_name}", file_handle.write)
+        with ftplib.FTP(FTP_HOST, timeout=180) as ftp:
+            ftp.login()
+            ftp.cwd(FTP_DIR)
+
+            with temp_file.open("wb") as file_handle:
+                ftp.retrbinary(f"RETR {file_name}", file_handle.write)
+
+        return temp_file
+
+    retry_ftp(operation, f"Download de {file_name}")
 
     temp_file.replace(output_file)
     return output_file
